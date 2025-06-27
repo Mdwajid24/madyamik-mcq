@@ -1,0 +1,657 @@
+TYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MCQ Quiz</title>
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <!-- Stylesheet -->
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            background-image: url('https://getwallpapers.com/wallpaper/full/f/e/e/367521.jpg');
+        }
+
+        .start-screen,
+        .score-container {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button {
+            border: none;
+            outline: none;
+            cursor: pointer;
+        }
+
+        #start-button,
+        #restart {
+            font-size: 1.3em;
+            padding: 0.5em 1.8em;
+            border-radius: 0.2em;
+        }
+
+        #restart {
+            margin-top: 0.9em;
+        }
+
+        #display-container {
+            background-color: #ffffff;
+            padding: 3.1em 1.8em;
+            width: 80%;
+            max-width: 37.5em;
+            margin: 0 auto;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 50%;
+            border-radius: 0.6em;
+            /* box-shadow: 10px 10px 10px 10px rgb(135, 81, 200); */
+            box-shadow: 5px 5px 20px rgba(255,255,255,0.5), -5px -5px 20px rgba(255,255,255,0.5);
+        }
+
+        .header {
+            margin-bottom: 1.8em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.6em;
+            border-bottom: 0.1em solid #c0bfd2;
+        }
+
+        .timer-div {
+            background-color: #e1f5fe;
+            width: 7.5em;
+            border-radius: 1.8em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7em 1.8em;
+        }
+
+        .question {
+            margin-bottom: 1.25em;
+            font-weight: 600;
+        }
+
+        .option-div {
+            font-size: 0.9em;
+            width: 100%;
+            padding: 1em;
+            margin: 0.3em 0;
+            text-align: left;
+            outline: none;
+            background: transparent;
+            border: 1px solid #c0bfd2;
+            border-radius: 0.3em;
+        }
+
+        .option-div:disabled {
+            color: #000000;
+            cursor: not-allowed;
+        }
+
+        #next-button {
+            font-size: 1em;
+            margin-top: 1.5em;
+            background-color: #0a69ed;
+            color: #ffffff;
+            padding: 0.7em 1.8em;
+            border-radius: 0.3em;
+            float: right;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .incorrect {
+            background-color: #ffdde0;
+            color: #d32f2f;
+            border-color: #d32f2f;
+        }
+
+        .correct {
+            background-color: #e7f6d5;
+            color: #689f38;
+            border-color: #689f38;
+        }
+
+        #user-score {
+            font-size: 1.5em;
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="start-screen">
+        <h1 style="Color:aqua;text-align:center;"> Quiz On Inorganic Chemistry</h1>
+        <button id="start-button">Start</button>
+    </div>
+    <div id="display-container">
+        <h2>Inorganic Chemistry</h2>
+        <div class="header">
+            <div class="number-of-count">
+                <span class="number-of-question">1 of 25 questions</span>
+            </div>
+            <div class="timer-div">
+                <span>&#128337;</span>
+                <span class="time-left">25s</span>
+            </div>
+        </div>
+        <div id="container">
+            <!-- questions and options will be displayed here -->
+        </div>
+        <button id="next-button">Next</button>
+    </div>
+    <div class="score-container hide">
+        <div id="user-score">Demo Score</div>
+        <button id="restart">Restart</button>
+    </div>
+    <audio id="correctSound" src="correct. ans.mp3" frameborder="0"
+        scrolling="no"></iframe>"></audio>
+    <audio id="wrongSound" src="wrong.ans.mp3"></audio>
+    <!-- Script -->
+    <script>
+        let timeLeft = document.querySelector(".time-left");
+        let quizContainer = document.getElementById("container");
+        let nextBtn = document.getElementById("next-button");
+        let countOfQuestion = document.querySelector(".number-of-question");
+        let displayContainer = document.getElementById("display-container");
+        let scoreContainer = document.querySelector(".score-container");
+        let restart = document.getElementById("restart");
+        let userScore = document.getElementById("user-score");
+        let startScreen = document.querySelector(".start-screen");
+        let startButton = document.getElementById("start-button");
+        let questionCount;
+        let scoreCount = 0;
+        let count = 11;
+        let countdown;
+        //Questions and Options array
+        const quizArray = [
+            {
+                id: "0",
+                question: "Ammonia is : ...............",
+                options: ["Acidic", "Basic", "Neutral", "Amphoteric"],
+                correct: "Basic",
+            },
+            {
+                id: "1",
+                question: "The reaction N2 + 3H2 = 2NH3 is ...............",
+                options: ["Exothermic", "Endothermic", "Neither of the two", "Both of the two"],
+                correct: "Exothermic",
+            },
+            {
+                id: "2",
+                question: "Liquid ammonia is used in refrigerators because : ...............;",
+                options: ["It has a high dipole moment", "It has a high heat of evaporation", "of its basicity", "of its stability"],
+                correct: "It has a high heat of evaporation",
+            },
+            {
+                id: "3",
+                question: "High heat of vaporization of ammonia is due to its : ...............",
+                options: ["basic nature", "polar nature", "hydrogen bonding", "high solubility"],
+                correct: "hydrogen bonding",
+            },
+            {
+                id: "4",
+                question: "Which of the following statements is correct for the manufacture of ammonia by Haber’s process ?",
+                options: ["Low temperature, high pressure, presence of catalyst", "High temperature, high pressure and catalyst", "Low temperature and pressure", "High temperature and low pressure"],
+                correct: "Low temperature, high pressure, presence of catalyst",
+            },
+            {
+                id: "5",
+                question: "Ammonia water makes a good cleaning agent because it: ...............",
+                options: ["is weakly basic", "emulsifies grease", "leaves no residue when wiped out", "all are true",],
+                correct: "all are true",
+            },
+            {
+                id: "6",
+                question: "Ammonium ion in solution is detected by ...............",
+                options: ["Brown-ring test", "Molisch’s test", "Nessler’s solution", " Fehling’s solution"],
+                correct: "Nessler’s solution",
+            },
+            {
+                id: "7",
+                question: "A mixture of ammonia and air at about 800°C in the presence of Pt gauze forms : ...............",
+                options: ["N2O", "NO", "NH2OH", "NO2",],
+                correct: "NO",
+            },
+            {
+                id: "8",
+                question: " The amount of an ion discharged during electrolysis is not directly proportional to :",
+                options: ["resistance", "time", "current", "chemical equivalent"],
+                correct: "resistance",
+            },
+            {
+                id: "9",
+                question: "Non-combustible hydride is : ............... ",
+                options: ["NH3", "PH3", "ASH3", "SbH3"],
+                correct: "NH3",
+            },
+            {
+                id: "10",
+                question: "Which is most explosive ?",
+                options: ["NCL3", "PCL3", "ASCL3", "ALL"],
+                correct: "NCL3",
+            },
+            {
+                id: "11",
+                question: "Ammonia gas is prepared in the laboratory by the action of slaked lime on ...............",
+                options: ["NH4Cl", "(NH4)2SO4 ", "NH4Cl+NaNO3", "NH4NO3"],
+                correct: "NH4Cl",
+            },
+            {
+                id: "12",
+                question: "With excess of Cl2 ammonia gives",
+                options: ["NCl3", "HCl", "NH4Cl", "N2O"],
+                correct: "NCL3",
+            },
+            {
+                id: "13",
+                question: "How NH3 is generally manufactured for fertilizers ?",
+                options: ["by reducing the by product HNO3","passing a mixture of N2 and H2 under high pressure and moderate temperature over a catalyst", "by passing an electric discharge in the mixture of H2 and N2", "2NH4Cl + Ca(OH)2 →CaCl2 + 2NH3 + 2H2O"],
+                correct: "passing a mixture of N2 and H2 under high pressure and moderate temperature over a catalyst",
+            },
+            {
+                id: "14",
+                question: "The vapour density of ammonia is: ",
+                options: ["7", "7.5", "8.5", "17"],
+                correct: "8.5",
+            },
+            {
+                id: "15",
+                question: "Ammonia is collected by ",
+                options: ["downward displacement of water", "downward displacement of air", "upward displacement of air", "by downward displacement of hot water"],
+                correct: "downward displacement of air ",
+            },
+            {
+                id: "16",
+                question: "Liquid NH3 bottles are opened only after cooling for some time. This is because",
+                options: ["NH3 is corrosive liquid", "it is a mild explosive", "it brings tears in eyes", "it generates high vapour pressure"],
+                correct: "it generates high vapour pressure ",
+            },
+            {
+                id: "17",
+                question: "Liquid ammonia contains:",
+                options: ["35% NH3", "60% NH3", "80% NH3", "0.0% NH3"],
+                correct: "35% NH3",
+            },
+            {
+                id: "18",
+                question: "Which of the following oxidation states is applicable to sulphur in H2S? ",
+                options: ["-2", "+5", "+6", "+3"],
+                correct: "-2",
+            },
+            {
+                id: "19",
+                question: "An example of non-linear molecule is :",
+                options: ["H2S", "CO2", "C2H2", "N2O"],
+                correct: "H2S",
+            },
+            {
+                id: "20",
+                question: "H2S on Incomplete combustion forms mainly",
+                options: ["HO and S", "H and SO2", "H2O and S", "H2O and SO2"],
+                correct: "H2O and S",
+            },
+             {
+                id: "21",
+                question: "H2S is a: ..........",
+                options: ["weak dibasic acid", "strong dibasic acid", "weak monobasic acid", "monobasic"],
+                correct: "Weak dibasic acid",
+            },
+             {
+                id: "22",
+                question: "H2S is :",
+                options: ["alkaline", "neutral", "acidic", "amphoteric gas"],
+                correct: "acidic",
+            }, 
+            {
+                id: "23",
+                question: "Molecular weight of H2S is:",
+                options: ["32", "34", "36", "38"],
+                correct: "34",
+            },
+             {
+                id: "24",
+                question: "FeS reacts with",
+                options: ["dil. H2SO4", "Conc. H2SO4", "Conc.HNO3 to form H2S", "None of these"],
+                correct: "dil. H2SO4",
+            },
+             {
+                id: "25",
+                question: "H2S gas has a smell:",
+                options: ["Like rotten eggs", "pungent", "smell like fish", "none of these"],
+                correct: "Like rotten eggs",
+            },
+             {
+                id: "26",
+                question: "Aqueous solution of the gas turns blue litmus to red:",
+                options: ["H2S", "NH3", "O2", "H2"],
+                correct: "H2S",
+            },
+            {
+                id: "27",
+                question: "H2S can be collected in downward displacement of",
+                options: ["hot water", "cold water", "Hg", "none of these"],
+                correct: "hot water",
+            },
+            {
+                id: "28",
+                question: "The gas which has reducing property",
+                options: ["H2S", "CO2", "NO2", "none of these"],
+                correct: "H2S",
+            }, 
+            {
+                id: "29",
+                question: "The boiling point of liquid nitrogen is",
+                options: ["0°C", " –195.7°C", "–180°C", "–273°C"],
+                correct: "–195.7°C",
+            }, 
+            {
+                id: "30",
+                question: "Chlorine present as impurity in nitrogen gas is removed by :",
+                options: ["Conc. NaOH", "Conc. H2SO4", "P2O5", "KNO3"],
+                correct: "Conc. NaOH",
+            },
+             {
+                id: "31",
+              question: "What is the product of combination of nitrogen with calcium carbide?",
+                options: ["calcium nitride", "calcium nitrate", "calcium nitrite", "calcium cyanamide"],
+                correct: "calcium cyanamide",
+            }, 
+            {
+                id: "32",
+                question: "How does nitrogen combine with oxygen ",
+                options: ["The two gases combine at a very high temperature under electric spark", "The two gases directly combine in presence of sunlight", "In absence of sunlight", "In presence of iron catalyst."],
+                correct: "The two gases combine at a very high temperature under electric spark",
+            },
+            {
+                id: "33",
+                question: "What is the necessity of presence of nitrogen in air:",
+                options: ["Nitrogen helps respiration of plants", "Nitrogen helps respiration of animals", "Nitrogen helps to burn", "Nitrogen helps to control burning in air."],
+                correct: "Nitrogen helps to control burning in air.",
+            }, {
+                id: "34",
+                question: "Why is not nitrogen gas prepared by heating NH4NO2 directly ",
+                options: ["Rapid explosive dissociation takes place", "Nitrogen gas is not obtained", "Nitrogen gas combines with oxygen in air", "None of these"],
+                correct: "Rapid explosive dissociation takes place",
+            }, {
+                id: "35",
+                question: "At ordinary temperature nitrogen is ________",
+                options: ["reactive", "inert", "very-active", "None of these"],
+                correct: "inert",
+            }, {
+                id: "36",
+                question: "The solubility of nitrogen in water is :_______",
+                options: ["low", "very low", "high", "very high"],
+                correct: "very low",
+            },
+             {
+              
+                id: "37",
+                question: "Nitrogen is ______",
+                options: ["heavier", "lighter", "slightly heavier", "slightly lighter than air"],
+                correct: "slightly heavier",
+            },
+             {
+                id: "38",
+                question: "The conversion of Nitrogen gas to liquid nitrogen is :_____________",
+                options: ["possible", "impossible", "easily possible", "possible but difficult"],
+                correct: "possible but difficult",
+            }, {
+                id: "39",
+                question: "Which of the following compounds is used as fertilizer ?",
+                options: ["calcium carbide", "calcium chloride", "magnesium nitride", "nitrolime"],
+                correct: "nitrolime",
+            }, {
+                id: "40",
+                question: "The requisite chemicals for the preparation of nitrogen :___________",
+                options: ["NH4Cl and Ca(OH)2", "NaNO2 and NH4C", "(NH4)2SO4 and NaOH", "NH4CL and NaOH"],
+                correct: "NaNO2 and NH4C",
+            }, {
+                id: "41",
+                question: "Nitrogen gas is collected by :___________",
+                options: ["downward displacement of water", "downward displacement of air", "upward displacement of air", "None of these"],
+                correct: "downward displacement of water",
+            }, {
+                id: "42",
+                question: "Percentage of nitrogen in air by volume is :_______",
+                options: ["20", "30", "78", "88"],
+                correct: "78",
+            }, {
+                id: "43",
+                question: "The conversion of SO2 by O2 into SO3 is :_____",
+                options: ["an irreversible reaction", "an endothermic reaction", "an exothermic reaction", "none of these"],
+                correct: "an exothermic reaction",
+            }, {
+                id: "44",
+                question: "Contact process is superior to chamber process for the manufacture of sulphuric acid as it",
+                options: ["provides acid of any concentration", "gives acid of low concentration", "provides impure acid", "Occupies large space"],
+                correct: "provides acid of any concentration",
+            }, {
+                id: "45",
+                question: "Oleum is",
+                options: ["H2SO5", "H2S2O7", "H2S2O8", "H2SO3"],
+                correct: "H2S2O7",
+            }, {
+                id: "46",
+                question: "Oil of vitriol is",
+                options: ["H2SO3", "H2SO4", "H2S2O7", "H2S2O8"],
+                correct: "H2SO4",
+            }, {
+                id: "47",
+                question: "Which is not correct in case of H2SO4 ?",
+                options: ["Oxidising agent", "Reducing agent", "Sulphonating agent", "Dehydrating agent"],
+                correct: "Reducing agent",
+            }, {
+                id: "48",
+                question: "Cone. H2SO4 is not :",
+                options: ["hygroscopic", "dehydrating agent", "sulphonating agent", "efflorescent"],
+                correct: "efflorescent",
+            },
+            {
+                id: "49",
+                question: "Catalyst used In the manufacture of H2SO4 by lead chamber process is: _________",
+                options: ["V2O5", "Pt", "Ni", "oxides of nitrogen"],
+                correct: "oxides of nitrogen",
+            },
+            {
+                id: "50",
+                question: "The process used to manufacture nitric acid is :",
+                options: ["Solvay process", "Ostwald process", "Hall process", "Haber process"],
+                correct: "Ostwald process",
+            },
+            {
+                id: "51",
+                question: "‘Sulphan’ is ..............",
+                options: ["20% oleum", "80% oleum", "100% oleum", "88% oleum"],
+                correct: "100% oleum",
+            },
+            {
+                id: "52",
+                question: "In Haber’s process,the product is :_____",
+                options: ["CO(NH2)2", "NH3", "HNO3", "H2SO4"],
+                correct: "NH3",
+            },
+            {
+                id: "53",
+                question: "Which one of the following is not a fertilizer?",
+                options: ["ammonia", "ammonium phosphate", "ammonium nitrate", "ammonium sulphate"],
+                correct: "ammonia",
+            },
+            {
+                id: "54",
+                question: "Choose the wrong statement :",
+                options: ["H2S is a yellow cofoured gas", "H2S is heavier than air", " H2S has rotten egg like smell", "The aqueous solution of H2S is acidic"],
+                correct: "H2S is a yellow cofoured gas",
+            },
+            {
+                id: "55",
+                question: "Which of the following gases can be prepared by Kipp’s apparatus?",
+                options: ["N2", "H2S", "HCL", "NH3"],
+                correct: "H2S",
+            },
+            {
+                id: "56",
+                question: "The optimum temperature for industrial preparation of H2SO4 is :___",
+                options: ["650°c", "850°c", "450°c", "250°c"],
+                correct: "450°c",
+            },
+
+
+
+
+        ];
+        //Restart Quiz
+        restart.addEventListener("click", () => {
+            initial();
+            displayContainer.classList.remove("hide");
+            scoreContainer.classList.add("hide");
+        });
+        //Next Button
+        nextBtn.addEventListener(
+            "click",
+            (displayNext = () => {
+                //increment questionCount
+                questionCount += 1;
+                //if last question
+                if (questionCount == quizArray.length) {
+                    //hide question container and display score
+                    displayContainer.classList.add("hide");
+                    scoreContainer.classList.remove("hide");
+                    //user score
+                    userScore.innerHTML =
+                        "Your score is " + scoreCount + " out of " + questionCount;
+                } else {
+                    //display questionCount
+                    countOfQuestion.innerHTML =
+                        questionCount + 1 + " of " + quizArray.length + " Question";
+                    //display quiz
+                    quizDisplay(questionCount);
+                    count = 26;
+                    clearInterval(countdown);
+                    timerDisplay();
+                }
+            })
+        );
+        //Timer
+        const timerDisplay = () => {
+            countdown = setInterval(() => {
+                count--;
+                timeLeft.innerHTML = `${count}s`;
+                if (count == 0) {
+                    clearInterval(countdown);
+                    displayNext();
+                }
+            }, 1000);
+        };
+        //Display quiz
+        const quizDisplay = (questionCount) => {
+            let quizCards = document.querySelectorAll(".container-mid");
+            //Hide other cards
+            quizCards.forEach((card) => {
+                card.classList.add("hide");
+            });
+            //display current question card
+            quizCards[questionCount].classList.remove("hide");
+        };
+        //Quiz Creation
+        function quizCreator() {
+            //randomly sort questions
+            quizArray.sort(() => Math.random() - 0.5);
+            //generate quiz
+            for (let i of quizArray) {
+                //randomly sort options
+                i.options.sort(() => Math.random() - 0.5);
+                //quiz card creation
+                let div = document.createElement("div");
+                div.classList.add("container-mid", "hide");
+                //question number
+                countOfQuestion.innerHTML = 1 + " of " + quizArray.length + " Question";
+                //question
+                let question_DIV = document.createElement("p");
+                question_DIV.classList.add("question");
+                question_DIV.innerHTML = i.question;
+                div.appendChild(question_DIV);
+                //options
+                div.innerHTML += `
+    <button class="option-div" onclick="checker(this)">${i.options[0]}</button>
+     <button class="option-div" onclick="checker(this)">${i.options[1]}</button>
+      <button class="option-div" onclick="checker(this)">${i.options[2]}</button>
+       <button class="option-div" onclick="checker(this)">${i.options[3]}</button>
+    `;
+                quizContainer.appendChild(div);
+            }
+        }
+        //Checker Function to check if option is correct or not
+        function checker(userOption) {
+            let userSolution = userOption.innerText;
+            let question =
+                document.getElementsByClassName("container-mid")[questionCount];
+            let options = question.querySelectorAll(".option-div");
+            //if user clicked answer == correct option stored in object
+            if (userSolution === quizArray[questionCount].correct) {
+                userOption.classList.add("correct");
+                scoreCount++;
+                document.getElementById('correctSound').play();
+            } else {
+                userOption.classList.add("incorrect");
+                document.getElementById('wrongSound').play();
+                //For marking the correct option
+                options.forEach((element) => {
+                    if (element.innerText == quizArray[questionCount].correct) {
+                        element.classList.add("correct");
+                    }
+                });
+            }
+            //clear interval(stop timer)
+            clearInterval(countdown);
+            //disable all options
+            options.forEach((element) => {
+                element.disabled = true;
+            });
+        }
+        //initial setup
+        function initial() {
+            quizContainer.innerHTML = "";
+            questionCount = 0;
+            scoreCount = 0;
+            count = 26;
+            clearInterval(countdown);
+            timerDisplay();
+            quizCreator();
+            quizDisplay(questionCount);
+        }
+        //when user click on start button
+        startButton.addEventListener("click", () => {
+            startScreen.classList.add("hide");
+            displayContainer.classList.remove("hide");
+            initial();
+        });
+        //hide quiz and display start screen
+        window.onload = () => {
+            let message=new SpeechSynthesisUtterance('Best Of Luch Give Your Best In Exam');
+            window.speechSynthesis.speak(message);
+            startScreen.classList.remove("hide");
+            displayContainer.classList.add("hide");
+        };
+    </script>
+</body>
+
+</html>

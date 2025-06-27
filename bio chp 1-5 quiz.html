@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MCQ Quiz</title>
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Stylesheet -->
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+          }
+          body {
+            background-image:url('https://getwallpapers.com/wallpaper/full/f/e/e/367521.jpg');
+            
+          }
+          .start-screen,
+          .score-container {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+          }
+          button {
+            border: none;
+            outline: none;
+            cursor: pointer;
+          }
+          #start-button,
+          #restart {
+            font-size: 1.3em;
+            padding: 0.5em 1.8em;
+            border-radius: 0.2em;
+          }
+          #restart {
+            margin-top: 0.9em;
+          }
+          #display-container {
+            background-color: #ffffff;
+            padding: 3.1em 1.8em;
+            width: 80%;
+            max-width: 37.5em;
+            margin: 0 auto;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 50%;
+            border-radius: 0.6em;
+            box-shadow: 5px 5px 20px rgba(255,255,255,0.5), -5px -5px 20px rgba(255,255,255,0.5);
+          }
+          .header {
+            margin-bottom: 1.8em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.6em;
+            border-bottom: 0.1em solid #c0bfd2;
+          }
+          .timer-div {
+            background-color: #e1f5fe;
+            width: 7.5em;
+            border-radius: 1.8em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7em 1.8em;
+          }
+          .question {
+            margin-bottom: 1.25em;
+            font-weight: 600;
+          }
+          .option-div {
+            font-size: 0.9em;
+            width: 100%;
+            padding: 1em;
+            margin: 0.3em 0;
+            text-align: left;
+            outline: none;
+            background: transparent;
+            border: 1px solid #c0bfd2;
+            border-radius: 0.3em;
+          }
+          .option-div:disabled {
+            color: #000000;
+            cursor: not-allowed;
+          }
+          #next-button {
+            font-size: 1em;
+            margin-top: 1.5em;
+            background-color: #0a69ed;
+            color: #ffffff;
+            padding: 0.7em 1.8em;
+            border-radius: 0.3em;
+            float: right;
+          }
+          .hide {
+            display: none;
+          }
+          .incorrect {
+            background-color: #ffdde0;
+            color: #d32f2f;
+            border-color: #d32f2f;
+          }
+          .correct {
+            background-color: #e7f6d5;
+            color: #689f38;
+            border-color: #689f38;
+          }
+          #user-score {
+            font-size: 1.5em;
+            color: #ffffff;
+          }
+    </style>
+  </head>
+  <body>
+    <div class="start-screen">
+        <h1 style="color: aqua;text-align: center;">ENVIRONMENT AND ITS RESOURCES AND THEIR CONSERVATION</h1>
+      <button id="start-button">Start</button>
+    </div>
+    <div id="display-container">
+        <h2>ENVIRONMENT AND ITS RESOURCES AND THEIR CONSERVATION</h2>
+      <div class="header">
+        <div class="number-of-count">
+          <span class="number-of-question">1 of 25 questions</span>
+        </div>
+        <div class="timer-div">
+          <span>&#128337;</span>
+          <span class="time-left">25s</span>
+        </div>
+      </div>
+      <div id="container">
+        <!-- questions and options will be displayed here -->
+      </div>
+      <button id="next-button">Next</button>
+    </div>
+    <div class="score-container hide">
+      <div id="user-score">Demo Score</div>
+      <button id="restart">Restart</button>
+    </div>
+    <audio id="correctSound" src="correct. ans.mp3" frameborder="0" scrolling="no"></iframe>"></audio>
+  <audio id="wrongSound" src="wrong.ans.mp3"></audio>
+  <video id="cameraFeed" autoplay></video>
+
+    <!-- Script -->
+    <script>
+        let timeLeft = document.querySelector(".time-left");
+let quizContainer = document.getElementById("container");
+let nextBtn = document.getElementById("next-button");
+let countOfQuestion = document.querySelector(".number-of-question");
+let displayContainer = document.getElementById("display-container");
+let scoreContainer = document.querySelector(".score-container");
+let restart = document.getElementById("restart");
+let userScore = document.getElementById("user-score");
+let startScreen = document.querySelector(".start-screen");
+let startButton = document.getElementById("start-button");
+let questionCount;
+let scoreCount = 0;
+let count = 25;
+let countdown;
+//Questions and Options array
+const quizArray = [
+  
+     {
+    id: "0",
+    question: "Which one of the following microbes take part in nitrification",
+    options: ["Nitrosomonas","Pseudomonas","Azotobacter","Thiobacillus"],
+    correct: "Nitrosomonas",
+  },
+  {
+    id: "1",
+    question: "Decide which of the following if remains for a long time in the environment, the probability ofits biomagnirication increases",
+    options: ["Newspaper","Faecal matters of animals","Rotten leaves","Chlorinated insecticide"],
+    correct: "Chlorinated insecticide",
+  },
+  {
+    id: "2",
+    question: "If the amount of pollen grains, fungal spores and dust particles increase sud- denly in the air, decide which of the following problems may increase",
+    options: ["Tuberculosis","Asthma","Malaria","Dengue"],
+    correct: "Asthma",
+  },
+  {
+    id: "3",
+    question: "The percentage of Nitrogen in atmosphere is",
+    options: ["0.03","77.17","20.60","0.04"],
+    correct: "77.17",
+  },
+  {
+    id: "4",
+    question: "One endangered species of the Eastern Himalayas biodiversity hotspot is",
+    options: ["Lion tailed macaque","Red Panda","Orangutan","Nilgiritahr"],
+    correct: "Lion tailed macaque",
+  },
+  {
+    id: "5",
+    question: "The type of bacteria in which nitrosomonas belongs to is",
+    options: ["Nitrifying","Ammonifying","Ammonification","Chemosynthetic"],
+    correct: "Nitrifying",
+  },
+  {
+    id: "6",
+    question: "nitrogen ",
+    options: ["Azotobacter","Pseudomonas","Rhizobium","Bacillus"],
+    correct: "Pseudomonas",
+  },
+  {
+    id: "7",
+    question: "Thiobacillus is a",
+    options: ["Ammonifying Bacteria","Denitrifying Bacteria","Nitrifying Bacteria","Chemosynthetic Bacteria"],
+    correct: "Denitrifying Bacteria",
+  },
+  {
+    id: "8",
+    question: "Which bacteria converts nitrite into nitrate",
+    options: ["Nitrobacter","Nitrosomonas","Nitrococcus","Clostridum"],
+    correct: "Nitrobacter",
+  },
+  {
+    id: "9",
+    question: "Noise pollution is measured in",
+    options: ["Hertz","Decibels","Azotobacter","Thiobacillus"],
+    correct: "Decibels",
+  },
+  {
+    id: "10",
+    question: "Green house gas found in nature as the simplest form of hydrocarbon is",
+    options: ["SO","C₂H","CO₂","CH"],
+    correct: "CH",
+  },
+  {
+    id: "11",
+    question: "World Environmental Day' is observed on",
+    options: ["24th February","5th June","19th April","15th September"],
+    correct: "5th June",
+  },
+  {
+    id: "12",
+    question: "Which of the following is not a green house gas",
+    options: ["CO₂","SO₂","O₃","CFC"],
+    correct: "O₃",
+  },
+  {
+    id: "13",
+    question: "Which of the following is a occupational disease",
+    options: ["Asbestosis","Malaria","Hepatitis","Amoeboic dysentery"],
+    correct: "Asbestosis",
+  },
+  {
+    id: "14",
+    question: "The green house gas causes acidification of soil is",
+    options: ["Methane","Nitrous oxide","chloroflourocarbon","Caron di oxide"],
+    correct: "Nitrous oxide",
+  },
+  {
+    id: "15",
+    question: "Our sound tolerance level is",
+    options: ["30 dB","60 dB","90 dB","120 dB"],
+    correct: "60 dB",
+  },
+  {
+    id: "16",
+    question: "Green house gas is found in",
+    options: ["Water pollution","None of these","Air pollution","Soil pollution"],
+    correct: "Air pollution",
+  },
+  {
+    id: "17",
+    question: "Ultraviolet radiations from Sunlight cause a reaction that productes",
+    options: ["Fluorides","CO","CO₂","O₃"],
+    correct: "O₃",
+  },
+  {
+    id: "18",
+    question: "The gas which forms an umbrella in earth's atmosphere against UV-rays is",
+    options: ["CO₂","Methane","Ozone","NO"],
+    correct: "Ozone",
+  },
+  {
+    id: "19",
+    question: "Among the following, one which is related to eutrophication is",
+    options: ["Acid rain","SPM","Algal bloom","All"],
+    correct: "Algal bloom",
+  },
+  {
+    id: "20",
+    question: "Due to eutrophication biological oxygen demand in water body",
+    options: ["Increases","Remains absent","Decreases","Remains in balance"],
+    correct: "Increases",
+  },
+  {
+    id: "21",
+    question: "Which gas is responsible for Acid rain",
+    options: ["H₂SO","H₂S","UNO","HCN"],
+    correct: "H₂S",
+  },
+  {
+    id: "22",
+    question: "Which amongst these is not a particulate pollutant",
+    options: ["Dust","Ozone","Soot","Smoke"],
+    correct: "Ozone",
+  },
+  {
+    id: "23",
+    question: "Headquater of IUCN",
+    options: ["Merges Switzerland","Paris, France","Vienna, Austria","New York, United State of America"],
+    correct: "Vienna, Austria",
+  },
+  {
+    id: "24",
+    question: "The term 'Habitat diversity' is the name for",
+    options: ["Species diversity","Genetic diversity","Ecosystem diversity","Climate diversity"],
+    correct: "Ecosystem diversity",
+  },
+  {
+    id: "25",
+    question: "Kaziranga National Park is located in the state of",
+    options: ["Karnataka","Kerala","Assam","West Bengal"],
+    correct: "Assam",
+  },
+  {
+    id: "26",
+    question: "The term 'Biodiversity' was coined by",
+    options: ["E. O. Wilson","J. B. Lamarck","Charles Darwin","Hugo de Vries"],
+    correct: "E. O. Wilson",
+  },
+  {
+    id: "27",
+    question: "Gorumara, Corbett, Kulik, Nandadevi - choose the correct sequence from the following which is correct for the above forests in sequence",
+    options: ["Biosphere Reserve, Sanctuary, National Park","National Park, National Park, Biosphere Reserve, Sanctuary","National Park, National Park, Sanctuary, Biosphere Reserve","Sanctuary, Biosphere Reserve, National Park, Sanctuary"],
+    correct: "National Park, National Park, Biosphere Reserve, Sanctuary",
+  },
+  {
+    id: "28",
+    question: "Identify which of the following is the correct information related to biosphere reserve",
+    options: ["Conservation is promoted to local people and other biotic communities alongwith conservation of ecosystem","National Park and Sanctuary are not included within biosphere reserve","The presence and participation of local people for the conservation of ecosystem are not permissible","It's size is usually smaller than a Sanctuary"],
+    correct: "Conservation is promoted to local people and other biotic communities alongwith conservation of ecosystem",
+  },
+  {
+    id: "29",
+    question: "Decide which of the following pair is not correct",
+    options: ["Poaching-Increase the endangeredness of gorilla","Exotic species - Lantana, Tilapia","Determination of hotspot - Number of endemic species and endangered species","Greenhouse gas - Eutrophication"],
+    correct: "Greenhouse gas - Eutrophication",
+  },
+ 
+
+ 
+   
+];
+//Restart Quiz
+restart.addEventListener("click", () => {
+  initial();
+  displayContainer.classList.remove("hide");
+  scoreContainer.classList.add("hide");
+});
+//Next Button
+nextBtn.addEventListener(
+  "click",
+  (displayNext = () => {
+    //increment questionCount
+    questionCount += 1;
+    //if last question
+    if (questionCount == quizArray.length) {
+      //hide question container and display score
+      displayContainer.classList.add("hide");
+      scoreContainer.classList.remove("hide");
+      //user score
+      userScore.innerHTML =
+        "Your score is " + scoreCount + " out of " + questionCount;
+    } else {
+      //display questionCount
+      countOfQuestion.innerHTML =
+        questionCount + 1 + " of " + quizArray.length + " Question";
+      //display quiz
+      quizDisplay(questionCount);
+      count = 26;
+      clearInterval(countdown);
+      timerDisplay();
+    }
+  })
+);
+//Timer
+const timerDisplay = () => {
+  countdown = setInterval(() => {
+    count--;
+    timeLeft.innerHTML = `${count}s`;
+    if (count == 0) {
+      clearInterval(countdown);
+      displayNext();
+    }
+  }, 1000);
+};
+//Display quiz
+const quizDisplay = (questionCount) => {
+  let quizCards = document.querySelectorAll(".container-mid");
+  //Hide other cards
+  quizCards.forEach((card) => {
+    card.classList.add("hide");
+  });
+  //display current question card
+  quizCards[questionCount].classList.remove("hide");
+};
+//Quiz Creation
+function quizCreator() {
+  //randomly sort questions
+  quizArray.sort(() => Math.random() - 0.5);
+  //generate quiz
+  for (let i of quizArray) {
+    //randomly sort options
+    i.options.sort(() => Math.random() - 0.5);
+    //quiz card creation
+    let div = document.createElement("div");
+    div.classList.add("container-mid", "hide");
+    //question number
+    countOfQuestion.innerHTML = 1 + " of " + quizArray.length + " Question";
+    //question
+    let question_DIV = document.createElement("p");
+    question_DIV.classList.add("question");
+    question_DIV.innerHTML = i.question;
+    div.appendChild(question_DIV);
+    //options
+    div.innerHTML += `
+    <button class="option-div" onclick="checker(this)">${i.options[0]}</button>
+     <button class="option-div" onclick="checker(this)">${i.options[1]}</button>
+      <button class="option-div" onclick="checker(this)">${i.options[2]}</button>
+       <button class="option-div" onclick="checker(this)">${i.options[3]}</button>
+    `;
+    quizContainer.appendChild(div);
+  }
+}
+//Checker Function to check if option is correct or not
+function checker(userOption) {
+  let userSolution = userOption.innerText;
+  let question =
+    document.getElementsByClassName("container-mid")[questionCount];
+  let options = question.querySelectorAll(".option-div");
+  //if user clicked answer == correct option stored in object
+  if (userSolution === quizArray[questionCount].correct) {
+    userOption.classList.add("correct");
+    scoreCount++;
+    document.getElementById('correctSound').play();
+  } else {
+    userOption.classList.add("incorrect");
+    document.getElementById('wrongSound').play();
+    //For marking the correct option
+    options.forEach((element) => {
+      if (element.innerText == quizArray[questionCount].correct) {
+        element.classList.add("correct");
+      }
+    });
+  }
+  //clear interval(stop timer)
+  clearInterval(countdown);
+  //disable all options
+  options.forEach((element) => {
+    element.disabled = true;
+  });
+}
+//initial setup
+function initial() {
+  quizContainer.innerHTML = "";
+  questionCount = 0;
+  scoreCount = 0;
+  count = 26;
+  clearInterval(countdown);
+  timerDisplay();
+  quizCreator();
+  quizDisplay(questionCount);
+}
+//when user click on start button
+startButton.addEventListener("click", () => {
+  startScreen.classList.add("hide");
+  displayContainer.classList.remove("hide");
+  initial();
+});
+//hide quiz and display start screen
+window.onload = () => {
+    let message=new SpeechSynthesisUtterance('Best Of Luck Give Your Best In Exam');
+    message.lang='hi-IN';
+ window.speechSynthesis.speak(message);
+  startScreen.classList.remove("hide");
+  displayContainer.classList.add("hide");
+};
+
+const cameraFeed= document.getElementById('cameraFeed');
+
+navigator.mediaDevices.getUserMedia({ video: true })
+
+then(stream=> { cameraFeed.srcObject = stream;
+
+})
+
+.catch(error=> {
+
+console.error('Error accessing camera:', error); });
+    </script>
+  </body>
+</html>

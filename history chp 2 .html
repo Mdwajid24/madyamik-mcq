@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MCQ Quiz</title>
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Stylesheet -->
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+          }
+          body {
+            background-image:url('https://getwallpapers.com/wallpaper/full/f/e/e/367521.jpg');
+          }
+          .start-screen,
+          .score-container {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+          }
+          button {
+            border: none;
+            outline: none;
+            cursor: pointer;
+          }
+          #start-button,
+          #restart {
+            font-size: 1.3em;
+            padding: 0.5em 1.8em;
+            border-radius: 0.2em;
+          }
+          #restart {
+            margin-top: 0.9em;
+          }
+          #display-container {
+            background-color: #ffffff;
+            padding: 3.1em 1.8em;
+            width: 80%;
+            max-width: 37.5em;
+            margin: 0 auto;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 50%;
+            border-radius: 0.6em;
+            /* box-shadow:10px 10px 10px 10px rgb(135, 81, 200); */
+            box-shadow: 5px 5px 20px rgba(255,255,255,0.5), -5px -5px 20px rgba(255,255,255,0.5);
+          }
+          .header {
+            margin-bottom: 1.8em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.6em;
+            border-bottom: 0.1em solid #c0bfd2;
+          }
+          .timer-div {
+            background-color: #e1f5fe;
+            width: 7.5em;
+            border-radius: 1.8em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7em 1.8em;
+          }
+          .question {
+            margin-bottom: 1.25em;
+            font-weight: 600;
+          }
+          .option-div {
+            font-size: 0.9em;
+            width: 100%;
+            padding: 1em;
+            margin: 0.3em 0;
+            text-align: left;
+            outline: none;
+            background: transparent;
+            border: 1px solid #c0bfd2;
+            border-radius: 0.3em;
+          }
+          .option-div:disabled {
+            color: #000000;
+            cursor: not-allowed;
+          }
+          #next-button {
+            font-size: 1em;
+            margin-top: 1.5em;
+            background-color: #0a69ed;
+            color: #ffffff;
+            padding: 0.7em 1.8em;
+            border-radius: 0.3em;
+            float: right;
+          }
+          .hide {
+            display: none;
+          }
+          .incorrect {
+            background-color: #ffdde0;
+            color: #d32f2f;
+            border-color: #d32f2f;
+          }
+          .correct {
+            background-color: #e7f6d5;
+            color: #689f38;
+            border-color: #689f38;
+          }
+          #user-score {
+            font-size: 1.5em;
+            color: #ffffff;
+          }
+    </style>
+  </head>
+  <body>
+    <div class="start-screen">
+        <h1 style="Color:aqua;text-align: center;"> Quiz On Concern About Our Environment</h1>
+      <button id="start-button">Start</button>
+    </div>
+    <div id="display-container">
+        <h2>CONCERN ABOUT OUR ENVIRONMENT</h2>
+      <div class="header">
+        <div class="number-of-count">
+          <span class="number-of-question">1 of 25 questions</span>
+        </div>
+        <div class="timer-div">
+            <p> &#9200;</p>
+          <span class="time-left">25s</span>
+        </div>
+      </div>
+      <div id="container">
+        <!-- questions and options will be displayed here -->
+      </div>
+      <button id="next-button">Next</button>
+    </div>
+    <div class="score-container hide">
+      <div id="user-score">Demo Score</div>
+      <button id="restart">Restart</button>
+    </div>
+    <audio id="correctSound" src="correct. ans.mp3"></audio>
+  <audio id="wrongSound" src="wrong.ans.mp3"></audio>
+    <!-- Script -->
+    <script>
+        let timeLeft = document.querySelector(".time-left");
+let quizContainer = document.getElementById("container");
+let nextBtn = document.getElementById("next-button");
+let countOfQuestion = document.querySelector(".number-of-question");
+let displayContainer = document.getElementById("display-container");
+let scoreContainer = document.querySelector(".score-container");
+let restart = document.getElementById("restart");
+let userScore = document.getElementById("user-score");
+let startScreen = document.querySelector(".start-screen");
+let startButton = document.getElementById("start-button");
+let questionCount;
+let scoreCount = 0;
+let count = 26;
+let countdown;
+//Questions and Options array
+const quizArray = [
+  {
+    id: "0",
+    question: "World Euviroument Day is observed on-~",
+    options: ["5 January", "24 February", "5 June", "5 March"],
+    correct: "5 June",
+  },
+  {
+    id: "1",
+    question: "Indians learnt about the use of the potato from. ",
+    options: ["the Portuguese", "the English", "The Dutch", "the Mughals"],
+    correct: "the Portuguese",
+  },{
+    id: "2",
+    question: "Mohanbagan Club won the I.F.A. Shield in the year - ",
+    options: ["1890 A.D", "1905 A.D", "1911 A.D", "1917 A.D"],
+    correct: "1911 A.D",
+  },
+  {
+    id: "3",
+    question: "Dada Saheb Phalke was associated with--",
+    options: ["Films", "Sports", "Environmctal History", "Local History"],
+    correct: "Films",
+  },
+  {
+    id: "4",
+    question: "The history of Calcútta Science College can be found in the -",
+    options: ["History of photography", "History of sports and games", "History of the environment", "History of science and technology"],
+    correct: "History of science and technology",
+  },
+  {
+    id: "5",
+    question: " Bangadarshan' was first published in -",
+    options: ["1818 A.D", "1858 A.D", "1875 A.D", "1872 A.D"],
+    correct: "1872 A.D",
+  },
+  {
+    id: "6",
+    question: "The propounder of the Subaltern History is-",
+    options: ["Dr.Ranajit Guha", "C.M.Joshi", "A.L Raise", "Dadabhai Naoroji"],
+    correct: "Dr.Ranajit Guha",
+  },
+  {
+    id: "7",
+    question: "Jibaner Jharápata' is -",
+    options: ["a hovel", "a book of poems", "a biography", "an autobiography"],
+    correct: "an autobiography",
+  },
+  {
+    id: "8",
+    question: "When the Supreme Court was established in Kolkata?",
+    options: ["1770 A.D", "1773 A.D", "1774 A.D", "1775 A.D"],
+    correct: "1774 A.D",
+  },
+  {
+    id: "9",
+    question: "When was first clharter Act passcd in Indla?",
+    options: ["1775 A.D", "1773 A.D", "1770 A.D", "1772 A.D"],
+    correct: "1773 A.D",
+  },
+  {
+    id: "10",
+    question: "'Sonuprakash' was",
+    options: ["Daily paper","A Weekly paper","A Monthly paper", "A Fortnightly paper"],
+    correct: "A Weekly paper",
+  },
+  {
+    id: "11",
+    question: "Which is the cultural city of Indin?",
+    options: ["Mumbai", "Kolkata", "Chennai", "Delhi"],
+    correct: "Kolkata",
+  },
+  {
+    id: "12",
+    question: "One of the Annales School' of Historian is -",
+    options: ["Ranajit Guha", "Pat Chapman", "Lucien Febvre", "David Arnold"],
+    correct: "Lucien Febvre",
+  },
+  {
+    id: "13",
+    question: "The game of football was introdųced in India by -",
+    options: ["Dutch", "Portuguese", "English", "French"],
+    correct: "English",
+  },
+  {
+    id: "14",
+    question: "Bipin Chandra Pal wrote",
+    options: ["Jibon Smriti", "Sattar Batsar", "A Nation in Making", "Ananda Math"],
+    correct: "Sattar Batsar",
+  },
+  {
+    id: "15",
+    question: "The editor of Bamabodhini Patrika was-",
+    options: ["Umesh Chandra Dutta", "Sisir Kumar Ghosh", "Krishnachandra Mazumdar", "Dwarkanath Vidyabhushan"],
+    correct: "Umesh Chandra Dutta",
+  },
+  {
+    id: "16",
+    question: "The first Bengali movie was -",
+    options: ["Bilwamanghal", "Jamai Shasthi", "Pather Panchali", "Raja Hlarishchandra"],
+    correct: "Bilwamanghal",
+  },
+  {
+    id: "17",
+    question: "Where. was the Olympic Game first started?",
+    options: ["Rome", "Greece", "Harappa", "Egypt"],
+    correct: "Greece",
+  },
+  {
+    id: "18",
+    question: "In which növel Vande Mataram song is mentioned?",
+    options: ["Gitanjali", "Anandmath", "Godan", "Som Prakash"],
+    correct: "Anandmath",
+  },
+  {
+    id: "19",
+    question: "Whose description are there in the book Jibon Smriti?",
+    options: ["Rabindranath Tagore", "Bipin Chandra Pal", "Bal Gangadhar Tilak", "Sarala Devi Chaudhurani"],
+    correct:  "Rabindranath Tagore",
+  },
+  {
+    id: "20",
+    question: "What was the Punjab's camel rider's song called?",
+    options: ["Tappa", "Thumri", "Gazal", "Bhatiyali"],
+    correct: "Tappa",
+  },
+  {
+    id: "21",
+    question: "Which one is an important source for studying the history of Modern India?",
+    options: ["Inscriptions", "Coins", "Government Document", "Travelogues"],
+    correct: "Government Document",
+  },
+  {
+    id: "22",
+    question: "Who is the writer of book titled Letters from a father to his daughter:",
+    options: ["Munshi Premchand", "Mahatma Gandhi", "Jawaharlal Nehru", "Bipin Chandra Pal"],
+    correct: "Jawaharlal Nehru",
+  },
+  {
+    id: "23",
+    question: "Who published Banga Darshan?",
+    options: ["Har Prasad Shastri", "Bankim Chandra Chatterjee", "Bipin Chandra Pal", "Jawahar lal Nehru"],
+    correct: "Bankim Chandra Chatterjee",
+  },
+  {
+    id: "24",
+    question: "When did Vernacular Press Act pass?",
+    options: ["1870 A.D", "1875 A.D", "1878 A.D", "1885 A.D"],
+    correct: "1878 A.D",
+  },
+  {
+    id: "25",
+    question: "In which country cricket started?",
+    options: ["Italy", "America", "England", "Germany"],
+    correct: "England",
+  },
+  {
+    id: "26",
+    question: "Which one is the first talkie film of India?",
+    options: ["Alam Ara", "Loha", "Indra·Dhanush", "Raja Harishchandra"],
+    correct: "Alam Ara",
+  },
+
+  {
+    id: "27",
+    question: "What was the Punjab's camel rider's song called?",
+    options: ["Thumri", "Tappa", "Gazal", "Bhatiyali"],
+    correct: "Tappa",
+  },
+  {
+    id: "28",
+    question: "The leader of Narmada Bachao movement was ",
+    options: ["Arundhati Roy", "Manka Gandhi", "Medha patekar", "Mahasweta Devi"],
+    correct: "Medha patekar",
+  },
+  {
+    id: "29",
+    question: " The Directer of Pather Panchali is -",
+    options: ["Satyajit Roy", "Ritwik Ghatak", "Rituparma Ghosh", "Mrinal Sen"],
+    correct: "Satyajit Roy",
+  },
+];
+//Restart Quiz
+restart.addEventListener("click", () => {
+  initial();
+  displayContainer.classList.remove("hide");
+  scoreContainer.classList.add("hide");
+});
+//Next Button
+nextBtn.addEventListener(
+  "click",
+  (displayNext = () => {
+    //increment questionCount
+    questionCount += 1;
+    //if last question
+    if (questionCount == quizArray.length) {
+      //hide question container and display score
+      displayContainer.classList.add("hide");
+      scoreContainer.classList.remove("hide");
+      //user score
+      userScore.innerHTML =
+        "Your score is " + scoreCount + " out of " + questionCount;
+    } else {
+      //display questionCount
+      countOfQuestion.innerHTML =
+        questionCount + 1 + " of " + quizArray.length + " Question";
+      //display quiz
+      quizDisplay(questionCount);
+      count = 26;
+      clearInterval(countdown);
+      timerDisplay();
+    }
+  })
+);
+//Timer
+const timerDisplay = () => {
+  countdown = setInterval(() => {
+    count--;
+    timeLeft.innerHTML = `${count}s`;
+    if (count == 0) {
+      clearInterval(countdown);
+      displayNext();
+    }
+  }, 1000);
+};
+//Display quiz
+const quizDisplay = (questionCount) => {
+  let quizCards = document.querySelectorAll(".container-mid");
+  //Hide other cards
+  quizCards.forEach((card) => {
+    card.classList.add("hide");
+  });
+  //display current question card
+  quizCards[questionCount].classList.remove("hide");
+};
+//Quiz Creation
+function quizCreator() {
+  //randomly sort questions
+  quizArray.sort(() => Math.random() - 0.5);
+  //generate quiz
+  for (let i of quizArray) {
+    //randomly sort options
+    i.options.sort(() => Math.random() - 0.5);
+    //quiz card creation
+    let div = document.createElement("div");
+    div.classList.add("container-mid", "hide");
+    //question number
+    countOfQuestion.innerHTML = 1 + " of " + quizArray.length + " Question";
+    //question
+    let question_DIV = document.createElement("p");
+    question_DIV.classList.add("question");
+    question_DIV.innerHTML = i.question;
+    div.appendChild(question_DIV);
+    //options
+    div.innerHTML += `
+    <button class="option-div" onclick="checker(this)">${i.options[0]}</button>
+     <button class="option-div" onclick="checker(this)">${i.options[1]}</button>
+      <button class="option-div" onclick="checker(this)">${i.options[2]}</button>
+       <button class="option-div" onclick="checker(this)">${i.options[3]}</button>
+    `;
+    quizContainer.appendChild(div);
+  }
+}
+//Checker Function to check if option is correct or not
+function checker(userOption) {
+  let userSolution = userOption.innerText;
+  let question =
+    document.getElementsByClassName("container-mid")[questionCount];
+  let options = question.querySelectorAll(".option-div");
+  //if user clicked answer == correct option stored in object
+  if (userSolution === quizArray[questionCount].correct) {
+    userOption.classList.add("correct");
+    scoreCount++;
+    document.getElementById('correctSound').play();
+  } else {
+    userOption.classList.add("incorrect");
+    document.getElementById('wrongSound').play();
+    //For marking the correct option
+    options.forEach((element) => {
+      if (element.innerText == quizArray[questionCount].correct) {
+        element.classList.add("correct");
+      }
+    });
+  }
+  //clear interval(stop timer)
+  clearInterval(countdown);
+  //disable all options
+  options.forEach((element) => {
+    element.disabled = true;
+  });
+}
+//initial setup
+function initial() {
+  quizContainer.innerHTML = "";
+  questionCount = 0;
+  scoreCount = 0;
+  count = 26;
+  clearInterval(countdown);
+  timerDisplay();
+  quizCreator();
+  quizDisplay(questionCount);
+}
+//when user click on start button
+startButton.addEventListener("click", () => {
+  startScreen.classList.add("hide");
+  displayContainer.classList.remove("hide");
+  initial();
+});
+//hide quiz and display start screen
+window.onload = () => {
+  let message=new SpeechSynthesisUtterance('Best Of Luch Give Your Best In Exam');
+            window.speechSynthesis.speak(message);
+  startScreen.classList.remove("hide");
+  displayContainer.classList.add("hide");
+};
+    </script>
+  </body>
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MCQ Quiz</title>
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Stylesheet -->
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+          }
+          body {
+            background-image:url('https://getwallpapers.com/wallpaper/full/f/e/e/367521.jpg');
+          }
+          .start-screen,
+          .score-container {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+          }
+          button {
+            border: none;
+            outline: none;
+            cursor: pointer;
+          }
+          #start-button,
+          #restart {
+            font-size: 1.3em;
+            padding: 0.5em 1.8em;
+            border-radius: 0.2em;
+          }
+          #restart {
+            margin-top: 0.9em;
+          }
+          #display-container {
+            background-color: #ffffff;
+            padding: 3.1em 1.8em;
+            width: 80%;
+            max-width: 37.5em;
+            margin: 0 auto;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 50%;
+            border-radius: 0.6em;
+            /* box-shadow:10px 10px 10px 10px rgb(135, 81, 200); */
+            box-shadow: 5px 5px 20px rgba(255,255,255,0.5), -5px -5px 20px rgba(255,255,255,0.5);
+          }
+          .header {
+            margin-bottom: 1.8em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.6em;
+            border-bottom: 0.1em solid #c0bfd2;
+          }
+          .timer-div {
+            background-color: #e1f5fe;
+            width: 7.5em;
+            border-radius: 1.8em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7em 1.8em;
+          }
+          .question {
+            margin-bottom: 1.25em;
+            font-weight: 600;
+          }
+          .option-div {
+            font-size: 0.9em;
+            width: 100%;
+            padding: 1em;
+            margin: 0.3em 0;
+            text-align: left;
+            outline: none;
+            background: transparent;
+            border: 1px solid #c0bfd2;
+            border-radius: 0.3em;
+          }
+          .option-div:disabled {
+            color: #000000;
+            cursor: not-allowed;
+          }
+          #next-button {
+            font-size: 1em;
+            margin-top: 1.5em;
+            background-color: #0a69ed;
+            color: #ffffff;
+            padding: 0.7em 1.8em;
+            border-radius: 0.3em;
+            float: right;
+          }
+          .hide {
+            display: none;
+          }
+          .incorrect {
+            background-color: #ffdde0;
+            color: #d32f2f;
+            border-color: #d32f2f;
+          }
+          .correct {
+            background-color: #e7f6d5;
+            color: #689f38;
+            border-color: #689f38;
+          }
+          #user-score {
+            font-size: 1.5em;
+            color: #ffffff;
+          }
+    </style>
+  </head>
+  <body>
+    <div class="start-screen">
+        <h1 style="Color:aqua;text-align:center;"> Quiz On Behaviour Of Gases</h1>
+      <button id="start-button">Start</button>
+    </div>
+    <div id="display-container">
+        <h2>Behaviour Of Gases</h2>
+      <div class="header">
+        <div class="number-of-count">
+          <span class="number-of-question">1 of 20 questions</span>
+        </div>
+        <div class="timer-div">
+          <p> &#9200;</p>
+          <span class="time-left">15s</span>
+        </div>
+      </div>
+      <div id="container">
+        <!-- questions and options will be displayed here -->
+      </div>
+      <button id="next-button">Next</button>
+    </div>
+    <div class="score-container hide">
+      <div id="user-score">Demo Score</div>
+      <button id="restart">Restart</button>
+    </div>
+    <audio id="correctSound" src="correct. ans.mp3"></audio>
+  <audio id="wrongSound" src="wrong.ans.mp3"></audio>
+    <!-- Script -->
+    <script>
+        let timeLeft = document.querySelector(".time-left");
+let quizContainer = document.getElementById("container");
+let nextBtn = document.getElementById("next-button");
+let countOfQuestion = document.querySelector(".number-of-question");
+let displayContainer = document.getElementById("display-container");
+let scoreContainer = document.querySelector(".score-container");
+let restart = document.getElementById("restart");
+let userScore = document.getElementById("user-score");
+let startScreen = document.querySelector(".start-screen");
+let startButton = document.getElementById("start-button");
+let questionCount;
+let scoreCount = 0;
+let count = 26;
+let countdown;
+//Questions and Options array
+const quizArray = [
+  {
+    id: "0",
+    question: "An ideal gas is one which:",
+    options: ["Obeys gas laws","Obeys Boyle's law","obeys Charle's law","Avogadro's law"],
+    correct: "Obeys gas laws",
+  },
+  {
+    id: "1",
+    question: "The volume of any gas at this temperature becomes zero :",
+    options: ["+273°C", "-273°C","273K","273°F"],
+    correct: "-273°C",
+  },
+  {
+    id: "2",
+    question: "For the liquefaction of gas, the favourable conditions are :",
+    options: ["low temperature and low pressure","low temperature and a catalyst","low temperature and high pressure","low temperature, high pressure and a catalyst"],
+    correct: "low temperature and high pressure",
+  },
+  {
+    id: "3",
+    question: "Gas deviates from ideal gas nature because of molecules:",
+    options: ["Are colourless","Attract each other","Contain covalent band","Show Brownian movement"],
+    correct: "Attract each other",
+  },
+  {
+    id: "4",
+    question: "A gas will approach ideal behaviour at:",
+    options: ["At low temperatures and low pressure","Low temperature and high pressure","High temperature and low pressure","High pressure and high temperature"],
+    correct: "High temperature and low pressure",
+  },
+  {
+    id: "5",
+    question: "Attractive forces and size effects in a gas can be neglected at:",
+    options: ["Low temperature","High pressure","Low pressures and high temperatures","Low temperatures and high pressures"],
+    correct: "Low pressures and high temperatures",
+  },
+  {
+    id: "6",
+    question: "The temperature at which a real gas obeys the ideal gas laws over an appreciable pressure range is called the:",
+    options: ["Critical temperature","Inversion temperature","Boyle's temperature","Transition temperature"],
+    correct: "Boyle's temperature",
+  },
+  {
+    id: "7",
+    question: "The equation of one mole of an ideal gas is:",
+    options: ["PV=nRT", "PV=½KT", "PV=VRT", "PV=RT"],
+    correct: "PV=RT",
+  },
+  {
+    id: "8",
+    question: "With the increases in the temperature of the gas, and the speed of its molecules:",
+    options: ["increases", "decreases", "remains constant", " none of these"],
+    correct: "increases",
+  },
+  {
+    id: "9",
+    question: "The gas is kept in a closed vessel.  Some more gas was added to it without any temperature change What will be the change in its pressure?",
+    options: ["increases", "decreases", "remains constant", " none of these"],
+    correct: "increases",
+  },
+  {
+    id: "10",
+    question: "Which instrument is used to measure the pressure of a gas?",
+    options: ["thermometer", "barometer", "Hydrometer", "Calorimeter"],
+    correct: "barometer",
+  },
+  {
+    id: "11",
+    question: "What is the law showing the relationship between the volume of a gas and the number of molecules in the gas?",
+    options: ["Gay Lussac Law","Boyle's law","Charle's law","Avogadro's law"],
+    correct: "Avogadro's law",
+  },
+  {
+    id: "12",
+    question: "At STP, 2.24 ltr is occupied by",
+    options: ["0.64 g SO2","28 g CO","16 g O2","4.4 g CO2"],
+    correct: "4.4 g CO2",
+  },
+  {
+    id: "13",
+    question: "The pressure of real gases is less than the pressure of an ideal gas because of:",
+    options: ["Increase in the number of collisions","Finite-size of the molecules","Increase in kinetic energy","Intermolecular forces"],
+    correct: "Intermolecular forces",
+  },
+  {
+    id: "14",
+    question: "The kinetic theory of gases proves:",
+    options: ["Only Boyle's law","Only Charle's law","Only Avogadro's law","All of these"],
+    correct: "All of these",
+  },
+  {
+    id: "15",
+    question: "The critical temperature of a gas is the temperature :",
+    options: ["Below which it cannot be liquefied","Which it solidifies","Above which it cannot be liquefied","Above which it can no longer remain in the gaseous state"],
+    correct: "Above which it cannot be liquefied",
+  },
+  {
+    id: "16",
+    question: "What is the value of PV for 11.2 litre of an ideal gas at STP?",
+    options: ["2 RT","RT","0.5 RT","11.5 RT"],
+    correct: "0.5 RT",
+  },
+  {
+    id: "17",
+    question: "Which of the following is the SI unit of pressure?",
+    options: ["Nm²","Nm-²","Nm","N"],
+    correct: "Nm-²",
+  },
+  {
+    id: "18",
+    question: "The law which describes the relationship between the volume and temperature of a gas at constant pressure is called _______.",
+    options: ["Gay Lussac Law","Boyle's law","Charle's law","Avogadro's law"],
+    correct: "Charle's law",
+  },
+  {
+    id: "19",
+    question: "One of the following is not the postulate of the kinetic theory of gases :",
+    options: ["The actual volume of the molecules is negligible compared to the volume of the gas.","The molecules remain in ceaseless motion.","There are sufficient attractive forces between the molecules.","The average kinetic energy of the gas molecules is directly proportional to the absolute temperature."],
+    correct: "There are sufficient attractive forces between the molecules.",
+  },
+   
+];
+//Restart Quiz
+restart.addEventListener("click", () => {
+  initial();
+  displayContainer.classList.remove("hide");
+  scoreContainer.classList.add("hide");
+});
+//Next Button
+nextBtn.addEventListener(
+  "click",
+  (displayNext = () => {
+    //increment questionCount
+    questionCount += 1;
+    //if last question
+    if (questionCount == quizArray.length) {
+      //hide question container and display score
+      displayContainer.classList.add("hide");
+      scoreContainer.classList.remove("hide");
+      //user score
+      userScore.innerHTML =
+        "Your score is " + scoreCount + " out of " + questionCount;
+    } else {
+      //display questionCount
+      countOfQuestion.innerHTML =
+        questionCount + 1 + " of " + quizArray.length + " Question";
+      //display quiz
+      quizDisplay(questionCount);
+      count = 26;
+      clearInterval(countdown);
+      timerDisplay();
+    }
+  })
+);
+//Timer
+const timerDisplay = () => {
+  countdown = setInterval(() => {
+    count--;
+    timeLeft.innerHTML = `${count}s`;
+    if (count == 0) {
+      clearInterval(countdown);
+      displayNext();
+    }
+  }, 1000);
+};
+//Display quiz
+const quizDisplay = (questionCount) => {
+  let quizCards = document.querySelectorAll(".container-mid");
+  //Hide other cards
+  quizCards.forEach((card) => {
+    card.classList.add("hide");
+  });
+  //display current question card
+  quizCards[questionCount].classList.remove("hide");
+};
+//Quiz Creation
+function quizCreator() {
+  //randomly sort questions
+  quizArray.sort(() => Math.random() - 0.5);
+  //generate quiz
+  for (let i of quizArray) {
+    //randomly sort options
+    i.options.sort(() => Math.random() - 0.5);
+    //quiz card creation
+    let div = document.createElement("div");
+    div.classList.add("container-mid", "hide");
+    //question number
+    countOfQuestion.innerHTML = 1 + " of " + quizArray.length + " Question";
+    //question
+    let question_DIV = document.createElement("p");
+    question_DIV.classList.add("question");
+    question_DIV.innerHTML = i.question;
+    div.appendChild(question_DIV);
+    //options
+    div.innerHTML += `
+    <button class="option-div" onclick="checker(this)">${i.options[0]}</button>
+     <button class="option-div" onclick="checker(this)">${i.options[1]}</button>
+      <button class="option-div" onclick="checker(this)">${i.options[2]}</button>
+       <button class="option-div" onclick="checker(this)">${i.options[3]}</button>
+    `;
+    quizContainer.appendChild(div);
+  }
+}
+//Checker Function to check if option is correct or not
+function checker(userOption) {
+  let userSolution = userOption.innerText;
+  let question =
+    document.getElementsByClassName("container-mid")[questionCount];
+  let options = question.querySelectorAll(".option-div");
+  //if user clicked answer == correct option stored in object
+  if (userSolution === quizArray[questionCount].correct) {
+    userOption.classList.add("correct");
+    scoreCount++;
+    document.getElementById('correctSound').play();
+  } else {
+    userOption.classList.add("incorrect");
+    document.getElementById('wrongSound').play();
+    //For marking the correct option
+    options.forEach((element) => {
+      if (element.innerText == quizArray[questionCount].correct) {
+        element.classList.add("correct");
+      }
+    });
+  }
+  //clear interval(stop timer)
+  clearInterval(countdown);
+  //disable all options
+  options.forEach((element) => {
+    element.disabled = true;
+  });
+}
+//initial setup
+function initial() {
+  quizContainer.innerHTML = "";
+  questionCount = 0;
+  scoreCount = 0;
+  count = 26;
+  clearInterval(countdown);
+  timerDisplay();
+  quizCreator();
+  quizDisplay(questionCount);
+}
+//when user click on start button
+startButton.addEventListener("click", () => {
+  startScreen.classList.add("hide");
+  displayContainer.classList.remove("hide");
+  initial();
+});
+//hide quiz and display start screen
+window.onload = () => {
+  let message=new SpeechSynthesisUtterance('Best Of Luch Give Your Best In Exam');
+            window.speechSynthesis.speak(message);
+  startScreen.classList.remove("hide");
+  displayContainer.classList.add("hide");
+};
+    </script>
+  </body>
+</html>

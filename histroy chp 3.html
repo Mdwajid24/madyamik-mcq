@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MCQ Quiz</title>
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Stylesheet -->
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+          }
+          body {
+            background-image:url('https://getwallpapers.com/wallpaper/full/f/e/e/367521.jpg');
+            
+          }
+          .start-screen,
+          .score-container {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+          }
+          button {
+            border: none;
+            outline: none;
+            cursor: pointer;
+          }
+          #start-button,
+          #restart {
+            font-size: 1.3em;
+            padding: 0.5em 1.8em;
+            border-radius: 0.2em;
+          }
+          #restart {
+            margin-top: 0.9em;
+          }
+          #display-container {
+            background-color: #ffffff;
+            padding: 3.1em 1.8em;
+            width: 80%;
+            max-width: 37.5em;
+            margin: 0 auto;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 50%;
+            border-radius: 0.6em;
+            /* box-shadow:10px 10px 10px 10px rgb(135, 81, 200); */
+            box-shadow: 5px 5px 20px rgba(255,255,255,0.5), -5px -5px 20px rgba(255,255,255,0.5);
+          }
+          .header {
+            margin-bottom: 1.8em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.6em;
+            border-bottom: 0.1em solid #c0bfd2;
+          }
+          .timer-div {
+            background-color: #e1f5fe;
+            width: 7.5em;
+            border-radius: 1.8em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7em 1.8em;
+          }
+          .question {
+            margin-bottom: 1.25em;
+            font-weight: 600;
+          }
+          .option-div {
+            font-size: 0.9em;
+            width: 100%;
+            padding: 1em;
+            margin: 0.3em 0;
+            text-align: left;
+            outline: none;
+            background: transparent;
+            border: 1px solid #c0bfd2;
+            border-radius: 0.3em;
+          }
+          .option-div:disabled {
+            color: #000000;
+            cursor: not-allowed;
+          }
+          #next-button {
+            font-size: 1em;
+            margin-top: 1.5em;
+            background-color: #0a69ed;
+            color: #ffffff;
+            padding: 0.7em 1.8em;
+            border-radius: 0.3em;
+            float: right;
+          }
+          .hide {
+            display: none;
+          }
+          .incorrect {
+            background-color: #ffdde0;
+            color: #d32f2f;
+            border-color: #d32f2f;
+          }
+          .correct {
+            background-color: #e7f6d5;
+            color: #689f38;
+            border-color: #689f38;
+          }
+          #user-score {
+            font-size: 1.5em;
+            color: #ffffff;
+          }
+    </style>
+  </head>
+  <body>
+    <div class="start-screen">
+        <h1 style="color: rgb(39, 119, 160);text-align:center;"> Quiz On History</h1>
+      <button id="start-button">Start</button>
+    </div>
+    <div id="display-container">
+        <h2>History </h2>
+      <div class="header">
+        <div class="number-of-count">
+          <span class="number-of-question">1 of 25 questions</span>
+        </div>
+        <div class="timer-div">
+          <span>&#128337;</span>
+          <span class="time-left">25s</span>
+        </div>
+      </div>
+      <div id="container">
+        <!-- questions and options will be displayed here -->
+      </div>
+      <button id="next-button">Next</button>
+    </div>
+    <div class="score-container hide">
+      <div id="user-score">Demo Score</div>
+      <button id="restart">Restart</button>
+    </div>
+    <audio id="correctSound" src="correct. ans.mp3" frameborder="0" scrolling="no"></iframe>"></audio>
+  <audio id="wrongSound" src="wrong.ans.mp3"></audio>
+    <!-- Script -->
+    <script>
+        let timeLeft = document.querySelector(".time-left");
+let quizContainer = document.getElementById("container");
+let nextBtn = document.getElementById("next-button");
+let countOfQuestion = document.querySelector(".number-of-question");
+let displayContainer = document.getElementById("display-container");
+let scoreContainer = document.querySelector(".score-container");
+let restart = document.getElementById("restart");
+let userScore = document.getElementById("user-score");
+let startScreen = document.querySelector(".start-screen");
+let startButton = document.getElementById("start-button");
+let questionCount;
+let scoreCount = 0;
+let count = 26;
+let countdown;
+//Questions and Options array
+const quizArray = [
+ {
+    id:"0",
+    question:"Which revolt was started in Bhagnadihí?",
+    options: ["Bhil revolt","Rangpur revolt","Santhal revolt","Mopla revolt"],
+    correct: "Santhal revolt",
+  },
+  {
+    id:"1",
+    question:"Chuar means",
+    options: ["Higher caste people","Lower caste people","Civilised people","tribals"],
+    correct: "tribals",
+  },
+  {
+    id:"2",
+    question:"The main objective of the Queen's Proclamation (1858) was -",
+    options: ["to gain the obedience of the Indian people","to give the British the right of monopoly of trade in India","to release the Indian prisoners of the Great Revolt of 1857","to grant the right of self-determination to the Indian subjects"],
+    correct: "to gain the obedience of the Indian people",
+  },
+  {
+    id:"3",
+    question:"The President of the Landholder's Society was -",
+    options: ["Raja Radhakant Deb","Prasanna Kumar Tagore","Dwaraka Nath Tagore","Raja Rammohan Roy"],
+    correct: "Prasanna Kumar Tagore",
+  },
+  {
+    id:"4",
+    question:"The Secretary of the Hindu Mela was-",
+    options: ["Nabagopal Mitra","Ganendranath Tagore","Rajnarayan Bose","Gandhi Ji"],
+    correct: "Ganendranath Tagore",
+  },{
+    id:"5",
+    question:"When did Queen Victoria's proclamation read out?",
+    options: ["1st November, 1858 A.D","Ist December, 1859 A.D","10th May, 186l A.D","1st November, 1860 A.D"],
+    correct: "1st November, 1858 A.D",
+  },
+  {
+    id:"6",
+    question:"Who founded Banga Bhasha ",
+    options: ["Gaurishankar Tarkabagis"," Rabindranath Tagore","Rammohan Roy","Debendranath Tagore"],
+    correct: "Gaurishankar Tarkabagis",
+  },
+  {
+    id:"7",
+    question:"Bartaman Bharat' was written by-",
+    options: ["Akshay Kumar Dutta","Rajnarayan Basu","Swami Vivekananda","Ramesh chadra Majumdar"],
+    correct: "Swami Vivekananda",
+  },
+  {
+    id:"8",
+    question:"Who was the writer of the novel 'Gora?",
+    options: ["Rabindra nath Tagore","Vivekanand","Vidyasagar","A. O. Hume"],
+    correct: "Rabindra nath Tagore",
+  },
+  {
+    id:"9",
+    question:"The rule of East-India Company in India came to an end in-",
+    options: ["1857 A.D","1858 A.D","1919 A.D","1947A.D"],
+    correct: "1858 A.D",
+  },
+  {
+    id:"10",
+    question:"The first Vieeroy of lndin appointed in aceordance with the Queen's Prooltion (1858) was –",
+    options: ["Lord Canning","Lord Dalhousic","Lord Bentinck","Lord Mountbatten"],
+    correct: "Lord Canning",
+  },
+  {
+    id:"11",
+    question:"The emperor of Delhi during the revolt of 1857 was-",
+    options: ["Farrukhsiyar","Jahandar Shah","Shah Alam II","Bahadur Shah-II"],
+    correct: "Bahadur Shah-II",
+  },
+  {
+    id:"12",
+    question:"The Governor General of India during the Great Revolt 'of 1857 A.D. was-",
+    options: ["Lord Wellesley","Lord Dalhousie","Lord Canning","Lord Mountbatten"],
+    correct: "Lord Canning",
+  },
+  {
+    id:"13",
+    question:"Who was given responsibility of starting political movement in Bengal?",
+    options: ["Raja Rammohan Roy","Vidyasagar","Derozio","Bhikaji Madam Kama"],
+    correct: "Raja Rammohan Roy",
+  },
+
+  {
+    id:"14",
+    question:"The person associated with the activities of Indian Association was",
+    options: ["Keshab Chandra Sen","Surendra Nath Bandopadhyay","Harish Chandra Mukhopadhyay","Gaganendranath Tagore"],
+    correct: "Surendra Nath Bandopadhyay",
+  },
+  {
+    id:"15",
+    question:"The title 'Nana Saheb of Bengal' is given to -",
+    options: ["Ramratan Mallick","Harishchandra Mukhopadhyay","Dinbandhu Mitra","Digambar Biswas"],
+    correct: "Ramratan Mallick",
+  },
+  {
+    id:"16",
+    question:"The author of the book The Great Rebellion was ",
+    options: ["Rajani Palme Dutta","Talmoz Khalden","P.C.Joshi","Charle's Reiks"],
+    correct: "Rajani Palme Dutta",
+  },
+  {
+    id:"17",
+    question:"In which novel Sensitive description of the 'Famine of Seventy Six' is found ",
+    options: ["Gora","Anandamath","Bartman Bharat","Pather Dabi"],
+    correct: "Anandamath",
+  },{
+    id:"18",
+    question:"Bharat Sabha' was established in-",
+    options: ["1876 A.D","1877 A.D","1880 A.D","1879 A.D"],
+    correct: "1876 A.D",
+  },
+  {
+    id:"19",
+    question:"Who is regarded as the 'Crownless king of Bengal'?",
+    options: ["Surendra Nath Badyopadhyay","Madan Mohan Ghosh","Rammohan Roy","Keshab Chandra Sen"],
+    correct: "Surendra Nath Badyopadhyay",
+  },
+  {
+    id:"20",
+    question:"The first name of Hindu Mela was -",
+    options: ["Chaitra Mela","Baisakhi Melu","Shravani Mela","Pous Mela"],
+    correct: "Chaitra Mela",
+  },
+  {
+    id:"21",
+    question:"When did Banga Bhasha Prakashika Sabha establish?",
+    options: ["1836 A.D","1866A.D","1844 A.D","1877 A.D"],
+    correct: "1836 A.D",
+  },
+  {
+    id:"22",
+    question:"Where did Banga Bhasa Prakashika Sabha establish?",
+    options: ["London","Bombay","Calcutta","Madras"],
+    correct: "Calcutta",
+  },
+  {
+    id:"23",
+    question:"When Poona Sarvajanic Sabha was founded?",
+    options: ["1870 A.D","1879A.D","1885 A.D","1875 A.D"],
+    correct: "1870 A.D",
+  },
+  {
+    id:"24",
+    question:"Who founded National Indian Association?",
+    options: ["Jagannath Shankar","Anand Mohan Bose","Mary Carpenter","Firoj Shah Mehta"],
+    correct: "Mary Carpenter",
+  },
+  {
+    id:"25",
+    question:"When was Land Holder's Assóciation founded?",
+    options: ["1853 A.D","1838 A.D","1836 A.D","1840 A.D"],
+    correct: "1838 A.D",
+  },
+
+  {
+    id:"26",
+    question:"Who started the revolt of 1857 in Barrackpore?",
+    options: ["Mangal Pandey","Rani Laxmibai","Prabasi","Som Prakash"],
+    correct: "Mangal Pandey",
+  },
+  {
+    id:"27",
+    question:"Who organised Hindu Mela?",
+    options: ["Nab Gopal Mitra","Anand Mohan Bose","Shishir Kr. Ghosh","S.N. Banerjee"],
+    correct: "Nab Gopal Mitra",
+  },{
+    id:"28",
+    question:"When Anandmath novel was written?",
+    options: ["1880 A.D","1873 A.D","1882 A.D","1875 A.D"],
+    correct: "1882 A.D",
+  },
+  {
+    id:"29",
+    question:" When Gora novel wvas written?",
+    options: ["1909 A.D","1907 A.D","1910 A.D","1908 A.D"],
+    correct: "1909 A.D",
+  },
+  {
+    id:"30",
+    question:"In which magazine Gora novel was published serially?",
+    options: ["Sibnath Sastri","Banga Darshan","Rev.Krishnamohan Bandyopadhyay","Anandamohan Bose"],
+    correct: "Rev.Krishnamohan Bandyopadhyay",
+  },
+];
+//Restart Quiz
+restart.addEventListener("click", () => {
+  initial();
+  displayContainer.classList.remove("hide");
+  scoreContainer.classList.add("hide");
+});
+//Next Button
+nextBtn.addEventListener(
+  "click",
+  (displayNext = () => {
+    //increment questionCount
+    questionCount += 1;
+    //if last question
+    if (questionCount == quizArray.length) {
+      //hide question container and display score
+      displayContainer.classList.add("hide");
+      scoreContainer.classList.remove("hide");
+      //user score
+      userScore.innerHTML =
+        "Your score is " + scoreCount + " out of " + questionCount;
+    } else {
+      //display questionCount
+      countOfQuestion.innerHTML =
+        questionCount + 1 + " of " + quizArray.length + " Question";
+      //display quiz
+      quizDisplay(questionCount);
+      count = 26;
+      clearInterval(countdown);
+      timerDisplay();
+    }
+  })
+);
+//Timer
+const timerDisplay = () => {
+  countdown = setInterval(() => {
+    count--;
+    timeLeft.innerHTML = `${count}s`;
+    if (count == 0) {
+      clearInterval(countdown);
+      displayNext();
+    }
+  }, 1000);
+};
+//Display quiz
+const quizDisplay = (questionCount) => {
+  let quizCards = document.querySelectorAll(".container-mid");
+  //Hide other cards
+  quizCards.forEach((card) => {
+    card.classList.add("hide");
+  });
+  //display current question card
+  quizCards[questionCount].classList.remove("hide");
+};
+//Quiz Creation
+function quizCreator() {
+  //randomly sort questions
+  quizArray.sort(() => Math.random() - 0.5);
+  //generate quiz
+  for (let i of quizArray) {
+    //randomly sort options
+    i.options.sort(() => Math.random() - 0.5);
+    //quiz card creation
+    let div = document.createElement("div");
+    div.classList.add("container-mid", "hide");
+    //question number
+    countOfQuestion.innerHTML = 1 + " of " + quizArray.length + " Question";
+    //question
+    let question_DIV = document.createElement("p");
+    question_DIV.classList.add("question");
+    question_DIV.innerHTML = i.question;
+    div.appendChild(question_DIV);
+    //options
+    div.innerHTML += `
+    <button class="option-div" onclick="checker(this)">${i.options[0]}</button>
+     <button class="option-div" onclick="checker(this)">${i.options[1]}</button>
+      <button class="option-div" onclick="checker(this)">${i.options[2]}</button>
+       <button class="option-div" onclick="checker(this)">${i.options[3]}</button>
+    `;
+    quizContainer.appendChild(div);
+  }
+}
+//Checker Function to check if option is correct or not
+function checker(userOption) {
+  let userSolution = userOption.innerText;
+  let question =
+    document.getElementsByClassName("container-mid")[questionCount];
+  let options = question.querySelectorAll(".option-div");
+  //if user clicked answer == correct option stored in object
+  if (userSolution === quizArray[questionCount].correct) {
+    userOption.classList.add("correct");
+    scoreCount++;
+    document.getElementById('correctSound').play();
+  } else {
+    userOption.classList.add("incorrect");
+    document.getElementById('wrongSound').play();
+    //For marking the correct option
+    options.forEach((element) => {
+      if (element.innerText == quizArray[questionCount].correct) {
+        element.classList.add("correct");
+      }
+    });
+  }
+  //clear interval(stop timer)
+  clearInterval(countdown);
+  //disable all options
+  options.forEach((element) => {
+    element.disabled = true;
+  });
+}
+//initial setup
+function initial() {
+  quizContainer.innerHTML = "";
+  questionCount = 0;
+  scoreCount = 0;
+  count = 26;
+  clearInterval(countdown);
+  timerDisplay();
+  quizCreator();
+  quizDisplay(questionCount);
+}
+//when user click on start button
+startButton.addEventListener("click", () => {
+  startScreen.classList.add("hide");
+  displayContainer.classList.remove("hide");
+  initial();
+});
+//hide quiz and display start screen
+window.onload = () => {
+            let message=new SpeechSynthesisUtterance('Best Of Luch Give Your Best In Exam');
+            window.speechSynthesis.speak(message);
+  startScreen.classList.remove("hide");
+  displayContainer.classList.add("hide");
+};
+    </script>
+  </body>
+</html>

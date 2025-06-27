@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MCQ Quiz</title>
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Stylesheet -->
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+          }
+          body {
+            background-image:url('https://i.pinimg.com/originals/78/86/02/788602f9cc0e6da15a99a9cb5750d4bf.gif');
+          }
+          .start-screen,
+          .score-container {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+          }
+          button {
+            border: none;
+            outline: none;
+            cursor: pointer;
+          }
+          #start-button,
+          #restart {
+            font-size: 1.3em;
+            padding: 0.5em 1.8em;
+            border-radius: 0.2em;
+          }
+          #restart {
+            margin-top: 0.9em;
+          }
+          #display-container {
+            background-color: #ffffff;
+            padding: 3.1em 1.8em;
+            width: 80%;
+            max-width: 37.5em;
+            margin: 0 auto;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 50%;
+            border-radius: 0.6em;
+            box-shadow:10px 10px 10px 10px rgb(135, 81, 200);
+          }
+          .header {
+            margin-bottom: 1.8em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.6em;
+            border-bottom: 0.1em solid #c0bfd2;
+          }
+          .timer-div {
+            background-color: #e1f5fe;
+            width: 7.5em;
+            border-radius: 1.8em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7em 1.8em;
+          }
+          .question {
+            margin-bottom: 1.25em;
+            font-weight: 600;
+          }
+          .option-div {
+            font-size: 0.9em;
+            width: 100%;
+            padding: 1em;
+            margin: 0.3em 0;
+            text-align: left;
+            outline: none;
+            background: transparent;
+            border: 1px solid #c0bfd2;
+            border-radius: 0.3em;
+          }
+          .option-div:disabled {
+            color: #000000;
+            cursor: not-allowed;
+          }
+          #next-button {
+            font-size: 1em;
+            margin-top: 1.5em;
+            background-color: #0a69ed;
+            color: #ffffff;
+            padding: 0.7em 1.8em;
+            border-radius: 0.3em;
+            float: right;
+          }
+          .hide {
+            display: none;
+          }
+          .incorrect {
+            background-color: #ffdde0;
+            color: #d32f2f;
+            border-color: #d32f2f;
+          }
+          .correct {
+            background-color: #e7f6d5;
+            color: #689f38;
+            border-color: #689f38;
+          }
+          #user-score {
+            font-size: 1.5em;
+            color: #ffffff;
+          }
+    </style>
+  </head>
+  <body>
+    <div class="start-screen">
+        <h1 style="Color:aqua;text-align: center;"> Quiz On Evolution and Adaptation </h1>
+      <button id="start-button">Start</button>
+    </div>
+    <div id="display-container">
+        <h2>Evolution and Adaptation</h2>
+      <div class="header">
+        <div class="number-of-count">
+          <span class="number-of-question">1 of 25 questions</span>
+        </div>
+        <div class="timer-div">
+          <span>&#128337;</span>
+          <span class="time-left">25s</span>
+        </div>
+      </div>
+      <div id="container">
+        <!-- questions and options will be displayed here -->
+      </div>
+      <button id="next-button">Next</button>
+    </div>
+    <div class="score-container hide">
+      <div id="user-score">Demo Score</div>
+      <button id="restart">Restart</button>
+    </div>
+    <audio id="correctSound" src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg" frameborder="0" scrolling="no"></iframe>"></audio>
+  <audio id="wrongSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+  <video id="cameraFeed" autoplay></video>
+    <!-- Script -->
+    <script>
+        let timeLeft = document.querySelector(".time-left");
+let quizContainer = document.getElementById("container");
+let nextBtn = document.getElementById("next-button");
+let countOfQuestion = document.querySelector(".number-of-question");
+let displayContainer = document.getElementById("display-container");
+let scoreContainer = document.querySelector(".score-container");
+let restart = document.getElementById("restart");
+let userScore = document.getElementById("user-score");
+let startScreen = document.querySelector(".start-screen");
+let startButton = document.getElementById("start-button");
+let questionCount;
+let scoreCount = 0;
+let count = 25;
+let countdown;
+//Questions and Options array
+const quizArray = [
+  {
+    id: "0",
+    question: "Parthenium is an exotic species in our country. Other indigenous species can- not survive in such places where it grows. This establishes one of the postulates of Darwin's theory. Identify the postulate-",
+    options: ["Intraspecific struggle","Struggle with environment"," Interspecific struggle","Origin of new species"],
+    correct: "Intraspecific struggle",
+  },
+    {
+    id: "1",
+    question:"Miller and Urey, in their experiment, were able to synthesize some preliminary constituents necessary for the creation of life. Indentify the ones which were amino acids among them",
+    options: ["Lactic acid, Acetic acid","Urea, Adenine","Glycine, Alanine","Formic acid, Acetic acid"],
+    correct: "Glycine, Alanine",
+  },
+  {
+    id: "2",
+    question: "The other name of protocell is",
+    options: ["Coacervate","Nucleic acid", "Glycine","Amino acid"],
+    correct: "Coacervate",
+  },
+  {
+    id: "3",
+    question: "Coecum is organ called",
+    options: ["Homologous", "Analogous", "Connected", "Vestigeal"],
+    correct: "Vestigeal",
+  },
+  {
+    id: "4",
+    question: "The correct sequence of evolution of horse from ancient to Modern age is",
+    options: ["Eohippus Mesohippus)→Merichippus) → Pleohippus) → Equus","Equus→ Pleohippus) → merichippus) hippus) Mesohipus) → Eohippus","Equus→ Eohippus → Pleohippus → Merichippus →→ Mesohippus" ,"Eohippus → Merichippus Mesohippus Pleohippus) → Equus"],
+    correct: "Eohippus Mesohippus)→Merichippus) → Pleohippus) → Equus",
+  },
+  {
+    id: "5",
+    question: "The organs which are not homologous in nature",
+    options: ["Wing of bat & hand of man",
+"Wing of bat & wing of butterfly.","Wing of bat & wing of butterfly","Paddle of Whale & forelimb of horse"],
+    correct: "Wing of bat & wing of butterfly.",
+  },
+  {
+    id: "6",
+    question: "In the carly stage of origin of life, abrupt change in anoxygenic environment was brought by)-",
+    options: ["Proto virus","Bacteria"," Virus","Cayano bacteria "],
+    correct: "Proto virus",
+  },
+  {
+    id: "7",
+    question: "The organs which are similar in origin but different in function is called -",
+    options: ["Analogour organ","Homologous organ","Vestigeal organ","Adaptation organ"],
+    correct:"Homologous organ",
+  },
+  {
+    id: "8",
+    question: "The heart is three chambered in-",
+    options: ["Fishes","Amphibians","Reptiles","Mammals"],
+    correct: "Amphibians",
+  },
+  {
+    id: "9",
+    question: "The first ancestor of horse was-",
+    options: ["Equus", "Eohippus",
+ "Pleiohippus ", "Merychippus"],
+    correct: "Eohippus",
+  },
+  {
+    id: "10",
+    question: "The book Philosophic Zoologiac was written by",
+    options: ["Lamarck","Darwin","De Vries","Weismann"],
+    correct: "Lamarck",
+  },
+  {
+    id: "11",
+    question: "Wings of bird and wings of insect are-",
+    options: ["Homologous organ","Analogous organ","Saturated organ","Connected organ"],
+    correct: "Analogous organ",
+  },
+  {
+    id: "12",
+    question: "The pro-pounder of Comparative Embryology is",
+    options: ["Hackel","Darwin","Miller","Lamarck"],
+    correct: "Hackel",
+  },
+  {
+    id: "13",
+    question: "Fore limbs of whale, bird, horse, man etc are called-",
+    options: ["Analogous organ","Vestigeal organ","Homologous organ","Transplanted organ"],
+    correct: "Homologous organ",
+  },
+  {
+    id: "14",
+    question: "Which amongst these is a vestigeal organ?",
+    options: ["Staminode","Calyx","Corolla","Gynoecium"],
+    correct: "Staminode",
+  },
+  {
+    id: "15",
+    question: "The Phylum which evolved from Mollusca",
+    options: [" Porifera","Echinodermata","Cnidaria","Arthropoda"],
+    correct: "Echinodermata",
+  },
+  {
+    id: "16",
+    question: "With the help of swimbladder, rohu fish can 0-",
+    options: ["Float in water","Swim in water","Be stable at any depth of water","Perform all these functions"],
+    correct: "Perform all these functions",
+  },
+  {
+    id: "17",
+    question: "Which organ helps in absorption of oxygen from the atmosphere in halophytic plant-Sundari?",
+    options: ["Root buttresses ","Pneumatophores","Haptera","Leaves"],
+    correct: "Pneumatophores",
+  },
+  {
+    id: "18",
+    question: "Number of air sac in pigeon is-",
+    options: ["7","8","9","10"],
+    correct: "9",
+  },
+  {
+    id: "19",
+    question: "Pneumatophore is observed in -",
+    options: ["Sundari ","Coconut","Cactus","Lotus"],
+    correct: "Sundari",
+  },
+  {
+    id: "20",
+    question:"The plant in which leaf spines are present is",
+    options: ["Cactus","Date palm","wood apple","Rose"],
+    correct: "Date palm",
+  },
+  {
+    id: "21",
+    question: "Identify the animal who communicates information with other members of its own group through specific dancing pattern regarding the source of food",
+    options: ["Chimpanzee","Cockroach","Peacock","Honeybee"],
+    correct: "Honeybee",
+  },
+  {
+    id: "22",
+    question: "Decide for which of the following purpose bees demonstrate waggle dance",
+    options: ["Search for reproductive mates ","Inform other worker bees about the direction and the distance of the source of food from the bee hive","Selecting place for the construction of the new bee hive","Avoid attack by probable enemy"],
+    correct: "Inform other worker bees about the direction and the distance of the source of food from the bee hive",
+  },
+      
+  
+  ];
+//Restart Quiz
+restart.addEventListener("click", () => {
+  initial();
+  displayContainer.classList.remove("hide");
+  scoreContainer.classList.add("hide");
+});
+//Next Button
+nextBtn.addEventListener(
+  "click",
+  (displayNext = () => {
+    //increment questionCount
+    questionCount += 1;
+    //if last question
+    if (questionCount == quizArray.length) {
+      //hide question container and display score
+      displayContainer.classList.add("hide");
+      scoreContainer.classList.remove("hide");
+      //user score
+      userScore.innerHTML =
+        "Your score is " + scoreCount + " out of " + questionCount;
+    } else {
+      //display questionCount
+      countOfQuestion.innerHTML =
+        questionCount + 1 + " of " + quizArray.length + " Question";
+      //display quiz
+      quizDisplay(questionCount);
+      count = 26;
+      clearInterval(countdown);
+      timerDisplay();
+    }
+  })
+);
+//Timer
+const timerDisplay = () => {
+  countdown = setInterval(() => {
+    count--;
+    //timeLeft.innerHTML = ${count}s;
+    if (count == 0) {
+      clearInterval(countdown);
+      displayNext();
+    }
+  }, 1000);
+};
+//Display quiz
+const quizDisplay = (questionCount) => {
+  let quizCards = document.querySelectorAll(".container-mid");
+  //Hide other cards
+  quizCards.forEach((card) => {
+    card.classList.add("hide");
+  });
+  //display current question card
+  quizCards[questionCount].classList.remove("hide");
+};
+//Quiz Creation
+function quizCreator() {
+  //randomly sort questions
+  quizArray.sort(() => Math.random() - 0.5);
+  //generate quiz
+  for (let i of quizArray) {
+    //randomly sort options
+    i.options.sort(() => Math.random() - 0.5);
+    //quiz card creation
+    let div = document.createElement("div");
+    div.classList.add("container-mid", "hide");
+    //question number
+    countOfQuestion.innerHTML = 1 + " of " + quizArray.length + " Question";
+    //question
+    let question_DIV = document.createElement("p");
+    question_DIV.classList.add("question");
+    question_DIV.innerHTML = i.question;
+    div.appendChild(question_DIV);
+    //options
+    div.innerHTML += `
+    <button class="option-div" onclick="checker(this)">${i.options[0]}</button>
+     <button class="option-div" onclick="checker(this)">${i.options[1]}</button>
+      <button class="option-div" onclick="checker(this)">${i.options[2]}</button>
+       <button class="option-div" onclick="checker(this)">${i.options[3]}</button>
+    `;
+    quizContainer.appendChild(div);
+  }
+}
+//Checker Function to check if option is correct or not
+function checker(userOption) {
+  let userSolution = userOption.innerText;
+  let question =
+    document.getElementsByClassName("container-mid")[questionCount];
+  let options = question.querySelectorAll(".option-div");
+  //if user clicked answer == correct option stored in object
+  if (userSolution === quizArray[questionCount].correct) {
+    userOption.classList.add("correct");
+    scoreCount++;
+    document.getElementById('correctSound').play();
+  } else {
+    userOption.classList.add("incorrect");
+    document.getElementById('wrongSound').play();
+    //For marking the correct option
+    options.forEach((element) => {
+      if (element.innerText == quizArray[questionCount].correct) {
+        element.classList.add("correct");
+      }
+    });
+  }
+  //clear interval(stop timer)
+  clearInterval(countdown);
+  //disable all options
+  options.forEach((element) => {
+    element.disabled = true;
+  });
+}
+//initial setup
+function initial() {
+  quizContainer.innerHTML = "";
+  questionCount = 0;
+  scoreCount = 0;
+  count = 26;
+  clearInterval(countdown);
+  timerDisplay();
+  quizCreator();
+  quizDisplay(questionCount);
+}
+//when user click on start button
+startButton.addEventListener("click", () => {
+  startScreen.classList.add("hide");
+  displayContainer.classList.remove("hide");
+  initial();
+});
+//hide quiz and display start screen
+window.onload = () => {
+
+  startScreen.classList.remove("hide");
+  displayContainer.classList.add("hide");
+};
+const cameraFeed= document.getElementById('cameraFeed');
+
+navigator.mediaDevices.getUserMedia({ video: true })
+
+then(stream=> { cameraFeed.srcObject = stream;
+
+})
+
+.catch(error=> {
+
+console.error('Error accessing camera:', error); });
+    </script>
+  </body>
+</html>

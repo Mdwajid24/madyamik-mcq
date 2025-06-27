@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MCQ Quiz</title>
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <!-- Stylesheet -->
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            background-image: url('https://getwallpapers.com/wallpaper/full/f/e/e/367521.jpg');
+        }
+
+        .start-screen,
+        .score-container {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button {
+            border: none;
+            outline: none;
+            cursor: pointer;
+        }
+
+        #start-button,
+        #restart {
+            font-size: 1.3em;
+            padding: 0.5em 1.8em;
+            border-radius: 0.2em;
+        }
+
+        #restart {
+            margin-top: 0.9em;
+        }
+
+        #display-container {
+            background-color: #ffffff;
+            padding: 3.1em 1.8em;
+            width: 80%;
+            max-width: 37.5em;
+            margin: 0 auto;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 50%;
+            border-radius: 0.6em;
+            /* box-shadow: 10px 10px 10px 10px rgb(135, 81, 200); */
+            box-shadow: 5px 5px 20px rgba(255,255,255,0.5), -5px -5px 20px rgba(255,255,255,0.5);
+        }
+
+        .header {
+            margin-bottom: 1.8em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.6em;
+            border-bottom: 0.1em solid #c0bfd2;
+        }
+
+        .timer-div {
+            background-color: #e1f5fe;
+            width: 7.5em;
+            border-radius: 1.8em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7em 1.8em;
+        }
+
+        .question {
+            margin-bottom: 1.25em;
+            font-weight: 600;
+        }
+
+        .option-div {
+            font-size: 0.9em;
+            width: 100%;
+            padding: 1em;
+            margin: 0.3em 0;
+            text-align: left;
+            outline: none;
+            background: transparent;
+            border: 1px solid #c0bfd2;
+            border-radius: 0.3em;
+        }
+
+        .option-div:disabled {
+            color: #000000;
+            cursor: not-allowed;
+        }
+
+        #next-button {
+            font-size: 1em;
+            margin-top: 1.5em;
+            background-color: #0a69ed;
+            color: #ffffff;
+            padding: 0.7em 1.8em;
+            border-radius: 0.3em;
+            float: right;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .incorrect {
+            background-color: #ffdde0;
+            color: #d32f2f;
+            border-color: #d32f2f;
+        }
+
+        .correct {
+            background-color: #e7f6d5;
+            color: #689f38;
+            border-color: #689f38;
+        }
+
+        #user-score {
+            font-size: 1.5em;
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="start-screen">
+        <h1 style="Color:aqua;"> Quiz On Light</h1>
+        <button id="start-button">Start</button>
+    </div>
+    <div id="display-container">
+        <h2>Light</h2>
+        <div class="header">
+            <div class="number-of-count">
+                <span class="number-of-question">1 of 25 questions</span>
+            </div>
+            <div class="timer-div">
+                <span>&#128337;</span>
+                <span class="time-left">25s</span>
+            </div>
+        </div>
+        <div id="container">
+            <!-- questions and options will be displayed here -->
+        </div>
+        <button id="next-button">Next</button>
+    </div>
+    <div class="score-container hide">
+        <div id="user-score">Demo Score</div>
+        <button id="restart">Restart</button>
+    </div>
+    <audio id="correctSound" src="correct. ans.mp3" frameborder="0"
+        scrolling="no"></iframe>"></audio>
+    <audio id="wrongSound" src="wrong.ans.mp3"></audio>
+    <!-- Script -->
+    <script>
+        let timeLeft = document.querySelector(".time-left");
+        let quizContainer = document.getElementById("container");
+        let nextBtn = document.getElementById("next-button");
+        let countOfQuestion = document.querySelector(".number-of-question");
+        let displayContainer = document.getElementById("display-container");
+        let scoreContainer = document.querySelector(".score-container");
+        let restart = document.getElementById("restart");
+        let userScore = document.getElementById("user-score");
+        let startScreen = document.querySelector(".start-screen");
+        let startButton = document.getElementById("start-button");
+        let questionCount;
+        let scoreCount = 0;
+        let count = 26;
+        let countdown;
+        //Questions and Options array
+        const quizArray = [
+            {
+                id: "0",
+                question: "The formation of spectrum is due to.",
+                options: ["reflection", "refraction", "dispersion of light","none of these"],
+                correct: "dispersion of light",
+            },
+            {
+                id: "1",
+                question: "The terminal colours of pure spectrum of white light are ",
+                options: ["blue and violet", "red and orange", "red and violet","blue and red"],
+                correct: "red and violet",
+            },
+            {
+                id: "2",
+                question: "The dispersion of white light was first observed by;",
+                options: ["sir issac newton", "Boyle", "maxwell","planks"],
+                correct: "sir issac newton",
+            },
+            {
+                id: "3",
+                question: "Linear magnification is equal to:",
+                options: ["(length of image) / (length of the object)", "(length of image) × (length of the object)", "(length of image) + (length of the object)", "(length of image) –(length of the object)"],
+                correct: "(length of image) × (length of the object)",
+            },
+            {
+                id: "4",
+                question: "The object is placed in between ‘f’ and ‘2f’ in convex lens, the size of image will be",
+                options: ["greater in size the object ", "smaller in size than the object", "equal in size of the object","none of these"],
+                correct: "greater in size the object",
+            },
+            {
+                id: "5",
+                question: "A ray is incident at an angle 38° with a mirror. The angle between normal and reflected ray is:",
+                options: ["38°", "52°", "90°", "76°",],
+                correct: "52°",
+            },
+            {
+                id: "6",
+                question: "A mirror produces magnified erect image of an object. The nature of mirror is",
+                options: ["convex", "concave", "neither convex nor concave", "plane"],
+                correct: "concave",
+            },
+            {
+                id: "7",
+                question: "A ray of light is incident normally on a plane mirror. The angle of reflection will be",
+                options: ["135°", "90°", "45°", "0°",],
+                correct: "0°",
+            },
+            {
+                id: "8",
+                question: "The focal length f of a spherical mirror of radius of curvature R is  :",
+                options: ["R/2", "R", "3/2 R", "2R"],
+                correct: "R/2",
+            },
+            {
+                id: "9",
+                question: "In which of the following cases, man will not see image greater than himself ? ",
+                options: ["Concave mirror", "Convex mirror", "Plane and Concave", "None of these"],
+                correct: "Convex mirror",
+            },
+            {
+                id: "10",
+                question: "Mirage is a phenomenon due to",
+                options: ["reflection of light ", "refraction of ligh", "total internal reflection of light", "diffraction of  light"],
+                correct: "total internal reflection of light",
+            },
+            {
+                id: "11",
+                question: "Which of the following colours suffers maximum deviation in a prism?",
+                options: ["yellow", "blue", "green", "orange"],
+                correct: "blue",
+            },
+            {
+                id: "12",
+                question: "The splitting of white light into several colours  on passing through a glass prism is due to :",
+                options: ["refraction", "reflection", "interference", "diffraction"],
+                correct: "refraction",
+            },
+            {
+                id: "13",
+                question: "Rainbow is formed due to a combination of :",
+                options: ["refraction and absorption", "dispersion and focussing ", "refraction and scattering", "dispersion and total internal reflection"],
+                correct: "dispersion and total internal reflection",
+            },
+            {
+                id: "14",
+                question: "Myopia is due to ",
+                options: ["older age", "shortening of eye ball", "irregular change in focal length", "elongation of eye ball"],
+                correct: "elongation of eye ball",
+            },
+            {
+                id: "15",
+                question: "Snell’s law is not valid when the angle of incidence is : ",
+                options: ["0° ", "45°", "60°", "90°"],
+                correct: "0°",
+            },
+            {
+                id: "16",
+                question: "The size of the pupil is adjusted by : ",
+                options: ["cornea", "iris", "retina", "aqueous human"],
+                correct: "iris",
+            },
+            {
+                id: "17",
+                question: "The colour of light which suffers maximum bending while passing through a glass prism is",
+                options: ["green", "red", "yellow", "violet"],
+                correct: "violet",
+            },
+            {
+                id: "18",
+                question: "The three primary colours are: ",
+                options: ["red,blue,yellow", "red,green,yellow", "yellow, green,orange", "red,green,blue"],
+                correct: "red,green,blue",
+            },
+
+            {
+                id: "19",
+                question: "The colour of an object is the same as the light that is:",
+                options: ["transmitted", "absorbed", "reflected", "All of these"],
+                correct: "reflected",
+            },
+            {
+                id: "20",
+                question: "If there were no atmosphere, the cloudless sky would have appeared ",
+                options: ["blue", "violet", "red ", "black"],
+                correct: "black",
+            },
+            {
+                id: "21",
+                question: "Back side of a shining stainless steel spoon resembles :",
+                options: ["a concave mirror", "a convex mirror", "a plane mirror", "a prism"],
+                correct: "a convex mirror",
+            },
+            {
+                id: "22",
+                question: " Front side of a shining stainless steel spoon resembles ",
+                options: ["a concave mirror", "a convex mirror", "a plane mirror ", "a prism"],
+                correct: "a concave mirror",
+            },
+            {
+                id: "23",
+                question: "Which of the following mirror is used by a dentist to examine a small cavity? ",
+                options: ["Convex mirror", "Plane mirror", "Concave mirror", "Combination of convex and concave mirror"],
+                correct: "Concave mirror",
+            },
+            {
+                id: "24",
+                question: "The image formed by concave mirror is real, inverted and of the same size as that of the object. The position of object should be ",
+                options: ["at the focus", "at the centre of curvature", "between focus and centre of curvature", "beyond centre of curvature"],
+                correct: "at the centre of curvature",
+            },
+            {
+                id: "25",
+                question: "As light travels from a rarer to a denser medium it will have",
+                options: ["increased velocity ", "decreased velocity", "decreased wavelength ", "increased velocity & decreased velocity "],
+                correct: "increased velocity & decreased velocity",
+            },
+            {
+                id: "26",
+                question: "You are given three media A, B and C of refractive index 1.33, 1.65 and 1.46. The medium in which the light will travel fastest is ",
+                options: ["A", "B", "C", "equal in all three media"],
+                correct: "A",
+            },
+            {
+                id: "27",
+                question: "Which statement is true for the reflection of light? ",
+                options: ["The angle of incidence and reflection are equal", "The reflected light is less bright than the incident light", "The sum of the angle of incidence and reflection is always greater than 900. ", " The beams of the incident light, after reflection, diverge at unequal angles"],
+                correct: "The angle of incidence and reflection are equal",
+            },
+            {
+                id: "28",
+                question: "The focal length of a plane mirror is ",
+                options: ["0", "infinite", "25 cm", "-25 cm"],
+                correct: "infinite",
+            },
+            {
+                id: "29",
+                question: "Image formed by a convex spherical mirror is: ",
+                options: ["virtual", "real", "enlarged ", "inverted"],
+                correct: "virtual",
+            },
+
+        ];
+        //Restart Quiz
+        restart.addEventListener("click", () => {
+            initial();
+            displayContainer.classList.remove("hide");
+            scoreContainer.classList.add("hide");
+        });
+        //Next Button
+        nextBtn.addEventListener(
+            "click",
+            (displayNext = () => {
+                //increment questionCount
+                questionCount += 1;
+                //if last question
+                if (questionCount == quizArray.length) {
+                    //hide question container and display score
+                    displayContainer.classList.add("hide");
+                    scoreContainer.classList.remove("hide");
+                    //user score
+                    userScore.innerHTML =
+                        "Your score is " + scoreCount + " out of " + questionCount;
+                } else {
+                    //display questionCount
+                    countOfQuestion.innerHTML =
+                        questionCount + 1 + " of " + quizArray.length + " Question";
+                    //display quiz
+                    quizDisplay(questionCount);
+                    count = 26;
+                    clearInterval(countdown);
+                    timerDisplay();
+                }
+            })
+        );
+        //Timer
+        const timerDisplay = () => {
+            countdown = setInterval(() => {
+                count--;
+                timeLeft.innerHTML = `${ count}s`;
+                if (count == 0) {
+                    clearInterval(countdown);
+                    displayNext();
+                }
+            }, 1000);
+        };
+        //Display quiz
+        const quizDisplay = (questionCount) => {
+            let quizCards = document.querySelectorAll(".container-mid");
+            //Hide other cards
+            quizCards.forEach((card) => {
+                card.classList.add("hide");
+            });
+            //display current question card
+            quizCards[questionCount].classList.remove("hide");
+        };
+        //Quiz Creation
+        function quizCreator() {
+            //randomly sort questions
+            quizArray.sort(() => Math.random() - 0.5);
+            //generate quiz
+            for (let i of quizArray) {
+                //randomly sort options
+                i.options.sort(() => Math.random() - 0.5);
+                //quiz card creation
+                let div = document.createElement("div");
+                div.classList.add("container-mid", "hide");
+                //question number
+                countOfQuestion.innerHTML = 1 + " of " + quizArray.length + " Question";
+                //question
+                let question_DIV = document.createElement("p");
+                question_DIV.classList.add("question");
+                question_DIV.innerHTML = i.question;
+                div.appendChild(question_DIV);
+                //options
+                div.innerHTML += `
+    <button class="option-div" onclick="checker(this)">${i.options[0]}</button>
+     <button class="option-div" onclick="checker(this)">${i.options[1]}</button>
+      <button class="option-div" onclick="checker(this)">${i.options[2]}</button>
+       <button class="option-div" onclick="checker(this)">${i.options[3]}</button>
+    `;
+                quizContainer.appendChild(div);
+            }
+        }
+        //Checker Function to check if option is correct or not
+        function checker(userOption) {
+            let userSolution = userOption.innerText;
+            let question =
+                document.getElementsByClassName("container-mid")[questionCount];
+            let options = question.querySelectorAll(".option-div");
+            //if user clicked answer == correct option stored in object
+            if (userSolution === quizArray[questionCount].correct) {
+                userOption.classList.add("correct");
+                scoreCount++;
+                document.getElementById('correctSound').play();
+            } else {
+                userOption.classList.add("incorrect");
+                document.getElementById('wrongSound').play();
+                //For marking the correct option
+                options.forEach((element) => {
+                    if (element.innerText == quizArray[questionCount].correct) {
+                        element.classList.add("correct");
+                    }
+                });
+            }
+            //clear interval(stop timer)
+            clearInterval(countdown);
+            //disable all options
+            options.forEach((element) => {
+                element.disabled = true;
+            });
+        }
+        //initial setup
+        function initial() {
+            quizContainer.innerHTML = "";
+            questionCount = 0;
+            scoreCount = 0;
+            count = 26;
+            clearInterval(countdown);
+            timerDisplay();
+            quizCreator();
+            quizDisplay(questionCount);
+        }
+        //when user click on start button
+        startButton.addEventListener("click", () => {
+            startScreen.classList.add("hide");
+            displayContainer.classList.remove("hide");
+            initial();
+        });
+        //hide quiz and display start screen
+        window.onload = () => {
+            let message=new SpeechSynthesisUtterance('Best Of Luch Give Your Best In Exam');
+            window.speechSynthesis.speak(message);
+            startScreen.classList.remove("hide");
+            displayContainer.classList.add("hide");
+        };
+    </script>
+</body>
+
+</html>

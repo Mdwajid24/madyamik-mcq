@@ -1,0 +1,567 @@
+TYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MCQ Quiz</title>
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <!-- Stylesheet -->
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            background-image:url('https://getwallpapers.com/wallpaper/full/f/e/e/367521.jpg');
+        }
+
+        .start-screen,
+        .score-container {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button {
+            border: none;
+            outline: none;
+            cursor: pointer;
+        }
+
+        #start-button,
+        #restart {
+            font-size: 1.3em;
+            padding: 0.5em 1.8em;
+            border-radius: 0.2em;
+        }
+
+        #restart {
+            margin-top: 0.9em;
+        }
+
+        #display-container {
+            background-color: #ffffff;
+            padding: 3.1em 1.8em;
+            width: 80%;
+            max-width: 37.5em;
+            margin: 0 auto;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 50%;
+            border-radius: 0.6em;
+            box-shadow: 5px 5px 20px rgba(255,255,255,0.5), -5px -5px 20px rgba(255,255,255,0.5);
+        }
+
+        .header {
+            margin-bottom: 1.8em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.6em;
+            border-bottom: 0.1em solid #c0bfd2;
+        }
+
+        .timer-div {
+            background-color: #e1f5fe;
+            width: 7.5em;
+            border-radius: 1.8em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7em 1.8em;
+        }
+
+        .question {
+            margin-bottom: 1.25em;
+            font-weight: 600;
+        }
+
+        .option-div {
+            font-size: 0.9em;
+            width: 100%;
+            padding: 1em;
+            margin: 0.3em 0;
+            text-align: left;
+            outline: none;
+            background: transparent;
+            border: 1px solid #c0bfd2;
+            border-radius: 0.3em;
+        }
+
+        .option-div:disabled {
+            color: #000000;
+            cursor: not-allowed;
+        }
+
+        #next-button {
+            font-size: 1em;
+            margin-top: 1.5em;
+            background-color: #0a69ed;
+            color: #ffffff;
+            padding: 0.7em 1.8em;
+            border-radius: 0.3em;
+            float: right;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .incorrect {
+            background-color: #ffdde0;
+            color: #d32f2f;
+            border-color: #d32f2f;
+        }
+
+        .correct {
+            background-color: #e7f6d5;
+            color: #689f38;
+            border-color: #689f38;
+        }
+
+        #user-score {
+            font-size: 1.5em;
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="start-screen">
+        <h1 style="Color:aqua;"> Quiz On Electrolysis</h1>
+        <button id="start-button">Start</button>
+    </div>
+    <div id="display-container">
+        <h2>CONCERN ABOUT OUR ENVIRONMENT</h2>
+        <div class="header">
+            <div class="number-of-count">
+                <span class="number-of-question">1 of 25 questions</span>
+            </div>
+            <div class="timer-div">
+                <span>&#128337;</span>
+                <span class="time-left">25s</span>
+            </div>
+        </div>
+        <div id="container">
+            <!-- questions and options will be displayed here -->
+        </div>
+        <button id="next-button">Next</button>
+    </div>
+    <div class="score-container hide">
+        <div id="user-score">Demo Score</div>
+        <button id="restart">Restart</button>
+    </div>
+    <audio id="correctSound" src="correct. ans.mp3" frameborder="0"
+        scrolling="no"></iframe>"></audio>
+    <audio id="wrongSound" src="wrong.ans.mp3"></audio>
+    <!-- Script -->
+    <script>
+        let timeLeft = document.querySelector(".time-left");
+        let quizContainer = document.getElementById("container");
+        let nextBtn = document.getElementById("next-button");
+        let countOfQuestion = document.querySelector(".number-of-question");
+        let displayContainer = document.getElementById("display-container");
+        let scoreContainer = document.querySelector(".score-container");
+        let restart = document.getElementById("restart");
+        let userScore = document.getElementById("user-score");
+        let startScreen = document.querySelector(".start-screen");
+        let startButton = document.getElementById("start-button");
+        let questionCount;
+        let scoreCount = 0;
+        let count = 11;
+        let countdown;
+        //Questions and Options array
+        const quizArray = [
+            {
+                id: "0",
+                question: "The electrolyte is",
+                options: ["Glycerine", "Sugar", "Sodium chloride", "Glucose"],
+                correct: "Sodium chloride",
+            },
+            {
+                id: "1",
+                question: "The vessel in which electrolysis takes place is called  ",
+                options: ["Voltameter", "Voltmeter", "Calorimeter ", "Ammeter"],
+                correct: "Voltameter",
+            },
+            {
+                id: "2",
+                question: "Which of the following substances is non-metal but conductor  ;",
+                options: ["Nickel", " Iron", "Silver", "Gas carbon"],
+                correct: "Gas carbon",
+            },
+            {
+                id: "3",
+                question: "A silver substance is to be gold plated which is to be used as anode:",
+                options: ["Pt", "Au", "Cu", "Fe"],
+                correct: "Au",
+            },
+            {
+                id: "4",
+                question: " What is the volume ratio of produced hydrogen and oxygen from electrolysis of water ?",
+                options: ["1:2","2:1", "2:3", "1:1"],
+                correct: "2:1",
+            },
+            {
+                id: "5",
+                question: " Which agent conducts electricity during electrolysis ?",
+                options: ["water", "ion", "atom", "molecule",],
+                correct: "ion",
+            },
+            {
+                id: "6",
+                question: " Molten sodium chloride conducts electricity due to the presence of",
+                options: ["free electrons", "free ions", "free molecules", "atoms of sodium and chlorine"],
+                correct: "free ions",
+            },
+            {
+                id: "7",
+                question: "An  electrolyte",
+                options: ["gives ions only when dissolved in water", "gives ions only when electric current is passed", "has ions even in the solid state", "does not give complex ions in solution",],
+                correct: "has ions even in the solid state",
+            },
+            {
+                id: "8",
+                question: "The amount of an ion discharged during electrolysis is not directly proportional to :",
+                options: ["resistance", "time", "current", "chemical equivalent"],
+                correct: "resistance",
+            },
+            {
+                id: "9",
+                question: "Which one of the following solutions will conduct electricity ?",
+                options: ["Magnesium chloride in water", "Sugar in water", "Sugar in ethyl alcohol", "lodine in ethyl alcohol"],
+                correct: "Magnesium chloride in water",
+            },
+            {
+                id: "10",
+                question: "In the electrolysis of NaCl :",
+                options: ["Cl– ion is oxidised at anode", "Cl– ion is reduced at anode", "Cl– ion is oxidised at cathode", "Cl– ion is neither reduced or oxidised"],
+                correct: "Cl– ion is oxidised at anode",
+            },
+            {
+                id: "11",
+                question: " On the electrolysis of a aqueous solution of sodium sulphate, on cathode, we get ",
+                options: ["Na", "H2", "SO2", "SO3"],
+                correct: "Na",
+            },
+            {
+                id: "12",
+                question: "On electrolysis a solution of dilute H2 SO4 using platinum electrodes, the gas evolved at the anode is  :",
+                options: ["SO2 ", "SO3", "O2", "H2"],
+                correct: "O2",
+            },
+            {
+                id: "13",
+                question: " When a copper wire is placed in solution of AgNO3, the solution acquires blue colour. This is due to the formation of: :",
+                options: ["Cu+2 ions", "Cu+ ions", "soluble complex of copper with AgNO3", "none of these"],
+                correct: "Cu+2 ions",
+            },
+            {
+                id: "14",
+                question: "Flow of current in an electrolyte is due to : ",
+                options: ["atoms", "electron", "ions", "none of these "],
+                correct: "ions",
+            },
+            {
+                id: "15",
+                question: "Use of electrolysis is : ",
+                options: ["Electroplating", "Electrorefining", "Both A And B", "none of these"],
+                correct: "Both A And B",
+            },
+            {
+                id: "16",
+                question: " Electroplating was discovered by : ",
+                options: ["Faraday", "Arrhenius", "Newton", "Dalton"],
+                correct: "Faraday",
+            },
+            {
+                id: "17",
+                question: "Which of the following is a strong electrolyte :",
+                options: ["Ca(NO3)2", "HNC", "H2SO3", "NH4OH"],
+                correct: "Ca(NO3)2",
+            },
+            {
+                id: "18",
+                question: "The electroplating with chromium is under taken because : ",
+                options: ["electrolysis of chromium is easier", "chromium can form alloys with other metals", "chromium gives a protective and decorative coating to the base metal", "of high reactivity of chromium metal"],
+                correct: "chromium gives a protective and decorative coating to the base metal",
+            },
+
+            {
+                id: "19",
+                question: "Pure water does not conduct electricity because it:",
+                options: ["has low boiling point", "is neutral", "is almost unionised", "is readily decomposed"],
+                correct: "is almost unionised",
+            },
+            {
+                id: "20",
+                question: "During electrolysis of CuSO4, the product collected at the anode is",
+                options: ["Oxygen", "Hydrogen", "Copper", "Sulphate"],
+                correct: "Oxygen",
+            },
+            {
+                id: "21",
+                question: "During the electrolysis of fused sodium chloride, the anodic reaction is :",
+                options: ["reduction of sodium ions", "oxidation of sodium ions", "reduction of chloride ions", "oxidation of chloride ions"],
+                correct: "oxidation of chloride ion", 
+            },
+            {
+                id: "22",
+                question: "The unit of quantity of electricity is",
+                options: ["volt", "coulomb",  "ampere", "ohm"],
+                correct: "coulomb",
+            },
+            {
+                id: "23",
+                question: "In electroplating copper with silver, the both solution used is of K[Ag(CN)2] instead of AgNO3 because on account of complex formation  : ",
+                options: ["a thin coating of silver is obtained", "Ag+ ions are completely removed from the solution", "expenses on electricity are reduced", "availability of Ag+ ions in solution is so reduced that they are not replaced by copper ions"],
+                correct: "availability of Ag+ ions in solution is so reduced that they are not replaced by copper ions",
+            },
+            {
+                id: "24",
+                question: "  For the electroplating of nickel, nickel sulphate is mixed with  ",
+                options: ["water", "nitric acid", "boric acid", "H2 SO4 as electrolyte"],
+                correct: "boric acid",
+            },
+            {
+                id: "25",
+                question: " During electrolysis of copper using copper electrodes of copper in solution is :",
+                options: ["increased ", "decreased ", "unaltered", "None of these"],
+                correct: "unaltered",
+            },
+            {
+                id: "26",
+                question: "  Which one of the following is a non-electrolyte ?",
+                options: ["Nacl", "HCL", "urea", "H2SO4"],
+                correct: "urea",
+            },
+            {
+                id: "27",
+                question: "Which one is a strong electrolyte ? ",
+                options: ["NaOH", "NH4 OH", "CH3 COOH", "glucose"],
+                correct: "NaOH",
+            },
+            {
+                id: "28",
+                question: "In electrolytic solution electricity is conducted by : ",
+                options: ["electrons", "atoms", "ions", "molecules"],
+                correct: "ions",
+            },
+            
+            {
+                id: "29",
+                question: "Electrolysis of CuSO4 solution using Cu-electrodes, the products at electrodes are :",
+                options: ["Cu-at anode", "Cu+2 at anode", "H2 at cathode", "O2 at anode"],
+                correct: "Cu+2 at anode",
+            },
+            {
+                id: "30",
+                question: "Reaction takes place during electrolysis at electrodes are :",
+                options: ["oxidation at cathode", "reduction at anode", "reduction at cathode", "no chemical reaction"],
+                correct: "reduction at cathode",
+            },
+            {
+                id: "31",
+                question: "Which one is an inert electrode?",
+                options: ["copper", "iron", "platinum", "graphite"],
+                correct: "graphite",
+            },
+            {
+                id: "32",
+                question: "During the electroplating of a spoon with silver, the reaction taking place at anode is.",
+                options: ["Ag+2+2e →Ag", "Ag-2 e →Ag+2", "Ag-e →Ag+", "Ag++ e →Ag"],
+                correct: "Ag-e →Ag+",
+            },
+            {
+                id: "33",
+                question: "The reaction that takes place at anode is :",
+                options: ["oxidation", "reduction", "substitution", "acid-base"],
+                correct: "oxidation",
+            },
+            {
+                id: "34",
+                question: "Which of the following is a weak electrolyte?",
+                options: ["CuSO4", "KOH", "H2 SO4", "CH3COOH"],
+                correct: "CH3COOH",
+            },
+            {
+                id: "35",
+                question: "Identify the strong electrolyte",
+                options: ["ammonium hydroxide", "acetic acid", "nitric acid", "carbonic acid"],
+                correct: "nitric acid",
+            },
+            {
+                id: "36",
+                question: "Choose the wrong statement ",
+                options: ["Pure water is a poor conductor of electricity", "Cations carry positive charges", "Anions move towards anode during electrolysis", "Oxidation takes place at the cathode"],
+                correct: "Oxidation takes place at the cathode",
+            },
+            {
+                id: "37",
+                question: "11.2 L of a gas is evolved at cathode during electrolysis of water. Amount of gas evolved at anode at the same temperature and pressure is :",
+                options: ["5.6L", "11.2L", "22.4L", "44.8L"],
+                correct: "5.6L",
+            },
+            {
+                id: "38",
+                question: "During copper refining which is used as anode?",
+                options: ["platinum", "pure copper", "graphite", "impure copper"],
+                correct: "impure copper",
+            },
+            {
+                id: "39",
+                question: "Energy conversion during electrolysis is :",
+                options: ["chemical to electrical", "electrical to chemical", "electrical to mechanical", "mechanical to electrical"],
+                correct: "electrical to chemical",
+            },
+            
+
+
+        ];
+        //Restart Quiz
+        restart.addEventListener("click", () => {
+            initial();
+            displayContainer.classList.remove("hide");
+            scoreContainer.classList.add("hide");
+        });
+        //Next Button
+        nextBtn.addEventListener(
+            "click",
+            (displayNext = () => {
+                //increment questionCount
+                questionCount += 1;
+                //if last question
+                if (questionCount == quizArray.length) {
+                    //hide question container and display score
+                    displayContainer.classList.add("hide");
+                    scoreContainer.classList.remove("hide");
+                    //user score
+                    userScore.innerHTML =
+                        "Your score is " + scoreCount + " out of " + questionCount;
+                } else {
+                    //display questionCount
+                    countOfQuestion.innerHTML =
+                        questionCount + 1 + " of " + quizArray.length + " Question";
+                    //display quiz
+                    quizDisplay(questionCount);
+                    count = 26;
+                    clearInterval(countdown);
+                    timerDisplay();
+                }
+            })
+        );
+        //Timer
+        const timerDisplay = () => {
+            countdown = setInterval(() => {
+                count--;
+                timeLeft.innerHTML =`${count}s`;
+                if (count == 0) {
+                    clearInterval(countdown);
+                    displayNext();
+                }
+            }, 1000);
+        };
+        //Display quiz
+        const quizDisplay = (questionCount) => {
+            let quizCards = document.querySelectorAll(".container-mid");
+            //Hide other cards
+            quizCards.forEach((card) => {
+                card.classList.add("hide");
+            });
+            //display current question card
+            quizCards[questionCount].classList.remove("hide");
+        };
+        //Quiz Creation
+        function quizCreator() {
+            //randomly sort questions
+            quizArray.sort(() => Math.random() - 0.5);
+            //generate quiz
+            for (let i of quizArray) {
+                //randomly sort options
+                i.options.sort(() => Math.random() - 0.5);
+                //quiz card creation
+                let div = document.createElement("div");
+                div.classList.add("container-mid", "hide");
+                //question number
+                countOfQuestion.innerHTML = 1 + " of " + quizArray.length + " Question";
+                //question
+                let question_DIV = document.createElement("p");
+                question_DIV.classList.add("question");
+                question_DIV.innerHTML = i.question;
+                div.appendChild(question_DIV);
+                //options
+                div.innerHTML += `
+    <button class="option-div" onclick="checker(this)">${i.options[0]}</button>
+     <button class="option-div" onclick="checker(this)">${i.options[1]}</button>
+      <button class="option-div" onclick="checker(this)">${i.options[2]}</button>
+       <button class="option-div" onclick="checker(this)">${i.options[3]}</button>
+    `;
+                quizContainer.appendChild(div);
+            }
+        }
+        //Checker Function to check if option is correct or not
+        function checker(userOption) {
+            let userSolution = userOption.innerText;
+            let question =
+                document.getElementsByClassName("container-mid")[questionCount];
+            let options = question.querySelectorAll(".option-div");
+            //if user clicked answer == correct option stored in object
+            if (userSolution === quizArray[questionCount].correct) {
+                userOption.classList.add("correct");
+                scoreCount++;
+                document.getElementById('correctSound').play();
+            } else {
+                userOption.classList.add("incorrect");
+                document.getElementById('wrongSound').play();
+                //For marking the correct option
+                options.forEach((element) => {
+                    if (element.innerText == quizArray[questionCount].correct) {
+                        element.classList.add("correct");
+                    }
+                });
+            }
+            //clear interval(stop timer)
+            clearInterval(countdown);
+            //disable all options
+            options.forEach((element) => {
+                element.disabled = true;
+            });
+        }
+        //initial setup
+        function initial() {
+            quizContainer.innerHTML = "";
+            questionCount = 0;
+            scoreCount = 0;
+            count = 26;
+            clearInterval(countdown);
+            timerDisplay();
+            quizCreator();
+            quizDisplay(questionCount);
+        }
+        //when user click on start button
+        startButton.addEventListener("click", () => {
+            startScreen.classList.add("hide");
+            displayContainer.classList.remove("hide");
+            initial();
+        });
+        //hide quiz and display start screen
+        window.onload = () => {
+            let message=new SpeechSynthesisUtterance('Best Of Luch Give Your Best In Exam');
+            window.speechSynthesis.speak(message);
+            startScreen.classList.remove("hide");
+            displayContainer.classList.add("hide");
+        };
+    </script>
+</body>
+
+</html>

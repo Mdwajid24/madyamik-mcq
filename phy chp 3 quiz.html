@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MCQ Quiz</title>
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <!-- Stylesheet -->
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            background-image: url('https://getwallpapers.com/wallpaper/full/f/e/e/367521.jpg');
+        }
+
+        .start-screen,
+        .score-container {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button {
+            border: none;
+            outline: none;
+            cursor: pointer;
+        }
+
+        #start-button,
+        #restart {
+            font-size: 1.3em;
+            padding: 0.5em 1.8em;
+            border-radius: 0.2em;
+        }
+
+        #restart {
+            margin-top: 0.9em;
+        }
+
+        #display-container {
+            background-color: #ffffff;
+            padding: 3.1em 1.8em;
+            width: 80%;
+            max-width: 37.5em;
+            margin: 0 auto;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 50%;
+            border-radius: 0.6em;
+            /* box-shadow: 10px 10px 10px 10px rgb(135, 81, 200); */
+            box-shadow: 5px 5px 20px rgba(255,255,255,0.5), -5px -5px 20px rgba(255,255,255,0.5);
+        }
+
+        .header {
+            margin-bottom: 1.8em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.6em;
+            border-bottom: 0.1em solid #c0bfd2;
+        }
+
+        .timer-div {
+            background-color: #e1f5fe;
+            width: 7.5em;
+            border-radius: 1.8em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7em 1.8em;
+        }
+
+        .question {
+            margin-bottom: 1.25em;
+            font-weight: 600;
+        }
+
+        .option-div {
+            font-size: 0.9em;
+            width: 100%;
+            padding: 1em;
+            margin: 0.3em 0;
+            text-align: left;
+            outline: none;
+            background: transparent;
+            border: 1px solid #c0bfd2;
+            border-radius: 0.3em;
+        }
+
+        .option-div:disabled {
+            color: #000000;
+            cursor: not-allowed;
+        }
+
+        #next-button {
+            font-size: 1em;
+            margin-top: 1.5em;
+            background-color: #0a69ed;
+            color: #ffffff;
+            padding: 0.7em 1.8em;
+            border-radius: 0.3em;
+            float: right;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .incorrect {
+            background-color: #ffdde0;
+            color: #d32f2f;
+            border-color: #d32f2f;
+        }
+
+        .correct {
+            background-color: #e7f6d5;
+            color: #689f38;
+            border-color: #689f38;
+        }
+
+        #user-score {
+            font-size: 1.5em;
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="start-screen">
+        <h1 style="Color:aqua;text-align:center;"> Quiz On Thermal Phenomenon</h1>
+        <button id="start-button">Start</button>
+    </div>
+    <div id="display-container">
+        <h2>Thermal Phenomenon</h2>
+        <div class="header">
+            <div class="number-of-count">
+                <span class="number-of-question">1 of 25 questions</span>
+            </div>
+            <div class="timer-div">
+                <span>&#128337;</span>
+                <span class="time-left">25s</span>
+            </div>
+        </div>
+        <div id="container">
+            <!-- questions and options will be displayed here -->
+        </div>
+        <button id="next-button">Next</button>
+    </div>
+    <div class="score-container hide">
+        <div id="user-score">Demo Score</div>
+        <button id="restart">Restart</button>
+    </div>
+    <audio id="correctSound" src="correct. ans.mp3" frameborder="0"
+        scrolling="no"></iframe>"></audio>
+    <audio id="wrongSound" src="wrong.ans.mp3"></audio>
+    <!-- Script -->
+    <script>
+        let timeLeft = document.querySelector(".time-left");
+        let quizContainer = document.getElementById("container");
+        let nextBtn = document.getElementById("next-button");
+        let countOfQuestion = document.querySelector(".number-of-question");
+        let displayContainer = document.getElementById("display-container");
+        let scoreContainer = document.querySelector(".score-container");
+        let restart = document.getElementById("restart");
+        let userScore = document.getElementById("user-score");
+        let startScreen = document.querySelector(".start-screen");
+        let startButton = document.getElementById("start-button");
+        let questionCount;
+        let scoreCount = 0;
+        let count = 26;
+        let countdown;
+        //Questions and Options array
+        const quizArray = [
+            {
+                id: "0",
+                question: "The coefficient of linear expansion of a solid is.",
+                options: ["3Y", "2Y", "Y", "Y/3"],
+                correct: "Y/3",
+            },
+            {
+                id: "1",
+                question: " A good insulator of heat is  ",
+                options: ["Copper", "Mercury", "trapped air", "Iron"],
+                correct: "trapped air",
+            },
+            {
+                id: "2",
+                question: " A bimetallic strip bends on heating due to:",
+                options: ["Uneven expansions", "Same expansion", "No expansions", "None of these"],
+                correct: "Uneven expansions",
+            },
+            {
+                id: "3",
+                question: "The coefficient of linear expansion of a solid depends on",
+                options: ["unit of length", "scale of temperature", "density of the material", "None of these"],
+                correct: "scale of temperature",
+            },
+            {
+                id: "4",
+                question: "A bimetallic strip bends upon heating because of",
+                options: ["same expansion ", "uneven expansion", "no expansion", "twisting"],
+                correct: "uneven expansion",
+            },
+            {
+                id: "5",
+                question: "If the value of coefficient of linear expansion is 1.5 × 10-4 ° C-1 then value of coefficient of superfical expansion is :",
+                options:[ "4.5 × 10^-4 °C^-1", "3.0 × 10^-4 ° C^-1 ", "6.0 × 10^-4 ° C^-1", "7.5 × 10^-4 ° C^-1"],
+            correct: "3.0 × 10^-4 ° C^-1",
+            },
+        {
+            id: "6",
+                question: "When a solid metallic sphere is heated, the largest percentage increase occurs in its",
+                    options: ["Diameter", "Surface area", "Volume", "Density"],
+                        correct: "Volume",
+            },
+        {
+            id: "7",
+                question: "For a liquid, the coefficient of apparent expansion (δa) and coefficient of real expansion (γ) are related a",
+                    options: ["δa = γr", "γa> γru", "γa< γr", "γa / γr = constant"],
+                        correct: "γa< γr",
+            },
+        {
+            id: "8",
+                question: "Coefficient of linear expansion of the following metals are in the order :",
+                    options: ["aluminium < copper < iron", " copper < iron < aluminium", "copper < aluminium < iron", "aluminium > copper > iron"],
+                        correct: "aluminium > copper > iron",
+            },
+        {
+            id: "9",
+                question: "The thermal conductivity of a rod is 2. what is its resistivity? ",
+                    options: ["0.5", "1", "0.25", "2"],
+                        correct: "0.5",
+            },
+        {
+            id: "10",
+                question: "Thermal conductivity of which of the following is the maximum?",
+                    options: [" copper", "silver" , "Daimond", "Platium"],
+                        correct: "Daimond",
+            },
+        {
+            id: "11",
+                question: "The magnitude of thermal conductivity of the following substances are in the order.",
+                    options: ["silver > aluminium > glass > wood", "aluminium > silver > glass > wood", " silver > aluminium > wood > glass", " aluminium > silver > wood > glass"],
+                        correct: "silver > aluminium > glass > wood",
+            },
+        {
+            id: "12",
+                question: "A liquid which is a good conductor of heat is :",
+                    options: ["kerosin", "mercury", "water", "turpentine"],
+                        correct: "mercury",
+            },
+        {
+            id: "13",
+                question: " For an ideal heat insulator, value of K is :",
+                    options: ["zero", "1", "100", " α"],
+                        correct: "zero",
+            },
+        {
+            id: "14",
+                question: "Thermal conductivity is generally denoted by",
+                    options: ["j", "k", "l", "m"],
+                        correct: "k",
+            },
+        
+        ];
+        //Restart Quiz
+        restart.addEventListener("click", () => {
+            initial();
+            displayContainer.classList.remove("hide");
+            scoreContainer.classList.add("hide");
+        });
+        //Next Button
+        nextBtn.addEventListener(
+            "click",
+            (displayNext = () => {
+                //increment questionCount
+                questionCount += 1;
+                //if last question
+                if (questionCount == quizArray.length) {
+                    //hide question container and display score
+                    displayContainer.classList.add("hide");
+                    scoreContainer.classList.remove("hide");
+                    //user score
+                    userScore.innerHTML =
+                        "Your score is " + scoreCount + " out of " + questionCount;
+                } else {
+                    //display questionCount
+                    countOfQuestion.innerHTML =
+                        questionCount + 1 + " of " + quizArray.length + " Question";
+                    //display quiz
+                    quizDisplay(questionCount);
+                    count = 26;
+                    clearInterval(countdown);
+                    timerDisplay();
+                }
+            })
+        );
+        //Timer
+        const timerDisplay = () => {
+            countdown = setInterval(() => {
+                count--;
+                timeLeft.innerHTML = `${count}s`;
+                if (count == 0) {
+                    clearInterval(countdown);
+                    displayNext();
+                }
+            }, 1000);
+        };
+        //Display quiz
+        const quizDisplay = (questionCount) => {
+            let quizCards = document.querySelectorAll(".container-mid");
+            //Hide other cards
+            quizCards.forEach((card) => {
+                card.classList.add("hide");
+            });
+            //display current question card
+            quizCards[questionCount].classList.remove("hide");
+        };
+        //Quiz Creation
+        function quizCreator() {
+            //randomly sort questions
+            quizArray.sort(() => Math.random() - 0.5);
+            //generate quiz
+            for (let i of quizArray) {
+                //randomly sort options
+                i.options.sort(() => Math.random() - 0.5);
+                //quiz card creation
+                let div = document.createElement("div");
+                div.classList.add("container-mid", "hide");
+                //question number
+                countOfQuestion.innerHTML = 1 + " of " + quizArray.length + " Question";
+                //question
+                let question_DIV = document.createElement("p");
+                question_DIV.classList.add("question");
+                question_DIV.innerHTML = i.question;
+                div.appendChild(question_DIV);
+                //options
+                div.innerHTML += `
+    <button class="option-div" onclick="checker(this)">${i.options[0]}</button>
+     <button class="option-div" onclick="checker(this)">${i.options[1]}</button>
+      <button class="option-div" onclick="checker(this)">${i.options[2]}</button>
+       <button class="option-div" onclick="checker(this)">${i.options[3]}</button>
+    `;
+                quizContainer.appendChild(div);
+            }
+        }
+        //Checker Function to check if option is correct or not
+        function checker(userOption) {
+            let userSolution = userOption.innerText;
+            let question =
+                document.getElementsByClassName("container-mid")[questionCount];
+            let options = question.querySelectorAll(".option-div");
+            //if user clicked answer == correct option stored in object
+            if (userSolution === quizArray[questionCount].correct) {
+                userOption.classList.add("correct");
+                scoreCount++;
+                document.getElementById('correctSound').play();
+            } else {
+                userOption.classList.add("incorrect");
+                document.getElementById('wrongSound').play();
+                //For marking the correct option
+                options.forEach((element) => {
+                    if (element.innerText == quizArray[questionCount].correct) {
+                        element.classList.add("correct");
+                    }
+                });
+            }
+            //clear interval(stop timer)
+            clearInterval(countdown);
+            //disable all options
+            options.forEach((element) => {
+                element.disabled = true;
+            });
+        }
+        //initial setup
+        function initial() {
+            quizContainer.innerHTML = "";
+            questionCount = 0;
+            scoreCount = 0;
+            count = 26;
+            clearInterval(countdown);
+            timerDisplay();
+            quizCreator();
+            quizDisplay(questionCount);
+        }
+        //when user click on start button
+        startButton.addEventListener("click", () => {
+            startScreen.classList.add("hide");
+            displayContainer.classList.remove("hide");
+            initial();
+        });
+        //hide quiz and display start screen
+        window.onload = () => {
+            let message=new SpeechSynthesisUtterance('Best Of Luch Give Your Best In Exam');
+            window.speechSynthesis.speak(message);
+            startScreen.classList.remove("hide");
+            displayContainer.classList.add("hide");
+        };
+    </script>
+</body>
+
+</html>

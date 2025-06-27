@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap');
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+body{
+    width: 100%;
+    /* height: 100vh; */
+    /* background-color: aquamarine; */
+    background: #F8F8F8;
+    display: grid;
+    place-items: center;
+}
+.container{
+    width: 94%;
+    height: 98vh;
+    margin: 1% 3%;
+    /* border: 1px solid red; */
+    border-radius: 5px;
+}
+.heading{
+    /* border: 1px solid black; */
+    width: 96%;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin: 2%;
+    background-color: #fff;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.3), -1px -1px 10px rgba(0, 0, 0, 0.3);
+}
+h1{
+    font-size: 25px;
+}
+p{
+    font-size: 16px;
+}
+.screen{
+    /* border: 1px solid black; */
+    width: 96%;
+    height: 90%;
+    border-radius: 5px;
+    margin: 2%;
+    padding: 2% 5%;
+    display: flex;
+    flex-wrap: wrap;
+    background-color: #fff;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.3), -1px -1px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: inset ;
+    overflow-y: scroll;
+}
+.topics{
+    margin-top: 2.5%;
+    margin-bottom: 2.5%;
+    border-radius: 5px;
+    width: 100%;
+    height: 20vh;
+    background-color: #eee;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.3), -1px -1px 10px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+.topics:nth-child(1){
+    margin-top: 4%;
+}
+.topics .bottom{
+    position: absolute;
+    width: 100%;
+    height: 18%;
+    background-color: #000;
+    font-size: 18px;
+    color: #fff;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    bottom: 0;
+    display: grid;
+    place-items: center;
+}
+h1{
+    font-size: 25px;
+}
+p{
+    font-size: 18px;
+}
+a{
+    text-decoration: none;
+    color: #fff;
+}
+.screen::-webkit-scrollbar{
+    border-radius: 5px;
+    background-color: #eee;
+    /* display: none; */
+    width: 5px;
+}
+    .screen::-webkit-scrollbar-thumb{
+    background-color: #ff004f;
+    border-radius: 3px;
+}
+img{
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+}
+@media (min-width: 550px) {
+    body{
+        overflow: hidden;
+    }
+    .topics{
+        width: 45%;
+        margin-right: 2%;
+        margin-left: 2%;
+    }
+    .screen{
+        flex-wrap: wrap;
+        height: 87%;
+    }
+    .topics:nth-child(2){
+        margin-top: 4%;
+    }
+}
+@media (min-width: 1050px) {
+    body{
+        overflow: hidden;
+    }
+    .heading{
+        margin-top: 5px;
+    }
+    .topics{
+        width: 20%;
+        margin-right: 2.5%;
+        margin-left: 2.5%;
+    }
+    .screen{
+        flex-wrap: wrap;
+        height: 85%;
+        margin-top: -5px;
+    }
+    .topics:nth-child(2){
+        margin-top: 4%;
+    }
+    .topics:nth-child(3){
+        margin-top: 4%;
+    }
+    .topics:nth-child(4){
+        margin-top: 4%;
+    }
+}

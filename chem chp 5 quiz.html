@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MCQ Quiz</title>
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Stylesheet -->
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+          }
+          body {
+            background-image:url('https://getwallpapers.com/wallpaper/full/f/e/e/367521.jpg');
+          }
+          .start-screen,
+          .score-container {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+          }
+          button {
+            border: none;
+            outline: none;
+            cursor: pointer;
+          }
+          #start-button,
+          #restart {
+            font-size: 1.3em;
+            padding: 0.5em 1.8em;
+            border-radius: 0.2em;
+          }
+          #restart {
+            margin-top: 0.9em;
+          }
+          #display-container {
+            background-color: #ffffff;
+            padding: 3.1em 1.8em;
+            width: 80%;
+            max-width: 37.5em;
+            margin: 0 auto;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 50%;
+            border-radius: 0.6em;
+            box-shadow: 5px 5px 20px rgba(255,255,255,0.5), -5px -5px 20px rgba(255,255,255,0.5);
+          }
+          .header {
+            margin-bottom: 1.8em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.6em;
+            border-bottom: 0.1em solid #c0bfd2;
+          }
+          .timer-div {
+            background-color: #e1f5fe;
+            width: 7.5em;
+            border-radius: 1.8em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7em 1.8em;
+          }
+          .question {
+            margin-bottom: 1.25em;
+            font-weight: 600;
+          }
+          .option-div {
+            font-size: 0.9em;
+            width: 100%;
+            padding: 1em;
+            margin: 0.3em 0;
+            text-align: left;
+            outline: none;
+            background: transparent;
+            border: 1px solid #c0bfd2;
+            border-radius: 0.3em;
+          }
+          .option-div:disabled {
+            color: #000000;
+            cursor: not-allowed;
+          }
+          #next-button {
+            font-size: 1em;
+            margin-top: 1.5em;
+            background-color: #0a69ed;
+            color: #ffffff;
+            padding: 0.7em 1.8em;
+            border-radius: 0.3em;
+            float: right;
+          }
+          .hide {
+            display: none;
+          }
+          .incorrect {
+            background-color: #ffdde0;
+            color: #d32f2f;
+            border-color: #d32f2f;
+          }
+          .correct {
+            background-color: #e7f6d5;
+            color: #689f38;
+            border-color: #689f38;
+          }
+          #user-score {
+            font-size: 1.5em;
+            color: #ffffff;
+          }
+    </style>
+  </head>
+  <body>
+    <div class="start-screen">
+        <h1 style="Color:aqua;"> Quiz On metallurgy</h1>
+      <button id="start-button">Start</button>
+    </div>
+    <div id="display-container">
+        <h2>metallurgy</h2>
+      <div class="header">
+        <div class="number-of-count">
+          <span class="number-of-question">1 of 25 questions</span>
+        </div>
+        <div class="timer-div">
+          <span>&#128337;</span>
+          <span class="time-left">25s</span>
+        </div>
+      </div>
+      <div id="container">
+        <!-- questions and options will be displayed here -->
+      </div>
+      <button id="next-button">Next</button>
+    </div>
+    <div class="score-container hide">
+      <div id="user-score">Demo Score</div>
+      <button id="restart">Restart</button>
+    </div>
+    <audio id="correctSound" src="correct. ans.mp3" frameborder="0" scrolling="no"></iframe>"></audio>
+  <audio id="wrongSound" src="wrong.ans.mp3"></audio>
+    <!-- Script -->
+    <script>
+        let timeLeft = document.querySelector(".time-left");
+let quizContainer = document.getElementById("container");
+let nextBtn = document.getElementById("next-button");
+let countOfQuestion = document.querySelector(".number-of-question");
+let displayContainer = document.getElementById("display-container");
+let scoreContainer = document.querySelector(".score-container");
+let restart = document.getElementById("restart");
+let userScore = document.getElementById("user-score");
+let startScreen = document.querySelector(".start-screen");
+let startButton = document.getElementById("start-button");
+let questionCount;
+let scoreCount = 0;
+let count = 11;
+let countdown;
+//Questions and Options array
+const quizArray = [
+  {
+    id: "0",
+    question: "Ores are the minerals from which",
+    options: ["Metals are extracted", "Non metals are present", "Metalloids are extracted", "All of these"],
+    correct: "Non metals are present",
+  },
+  {
+    id: "1",
+    question: "Malachite is mineral containing :",
+    options: ["Magnesium", "Aluminium", "Copper", "Tin"],
+    correct: "Copper",
+  },
+  {
+    id: "2",
+    question: "Calcium is extracted by the electrolysis of :",
+    options: ["CaCl2 solution", "CaSO4 solution", "fused CaCl2", "fused Ca3(PO4)2"],
+    correct: "fused Ca3(PO4)2",
+  },
+  {
+    id: "3",
+    question: "The most electropositive alkali metal is :",
+    options: ["Li", "Na", "K", "Cs"],
+    correct: "Cs",
+  },
+  {
+    id: "4",
+    question: "Which of the following is not the ore of magnesium ?",
+    options: ["Carnallite", "Dolomite", "Gypsum", "Magnesite"],
+    correct: "Gypsum",
+  },
+  {
+    id: "5",
+    question: "Magnesium is isolated by the electrolysis of :",
+    options: ["fused MgCl2", "MgCl2 solution", "MgSO4 solution", "MgO dissolved in MgCl2"],
+    correct: "fused MgCl2",
+  },
+  {
+    id: "6",
+    question: "Dolomite is an ore of magnesium and it is :",
+    options: ["MgCO3", "MgCO3, CaCO3", "MgCl2, KCl, 6H2O", "None of these"],
+    correct: "MgCO3, CaCO3",
+  },
+  {
+    id: "7",
+    question: "Carnallite is an ore of magnesium and it is :",
+    options: ["K2SO4, MgSO4, MgCl2,6H2O", "MgSO4, H2O", "MgCl2,KCl, 6H2O", "None of these"],
+    correct: "MgCl2,KCl, 6H2O",
+  },
+  {
+    id: "8",
+    question: "Calcium oxide is also called : ...................",
+    options: ["milk of lime", "quick lime", "lime stone", "slaked lime"],
+    correct: "quick lime",
+  },
+  {
+    id: "9",
+    question: "One of the important uses of quick lime is :",
+    options: ["in bleaching silk", "in drying gases and alcohol", "as a purgative", "in dyeing cotton"],
+    correct: "in drying gases and alcohol",
+},
+{
+    id: "10",
+    question: "Heating of pyrites to remove sulphur is called as:",
+    options: ["Roasting", "Calcination", "Smelting", "Fluxing"],
+    correct: "Roasting",
+  },
+  {
+    id: "11",
+    question: "The element which is some times found in native state is :",
+    options: ["Al", "Cu", "Fe", "Mg"],
+    correct: "Cu",
+  },
+  {
+    id: "12",
+    question: "The fluorspar is :",
+    options: ["CaSO4", "BaSO4", "CaF2", "CaCO3"],
+    correct: "CaF2",
+  },
+  {
+    id: "13",
+    question: "Which of the following is not the ore of calcium ?",
+    options: ["Gypsum", "Lime stone", "Dolomite", "Carnallite"],
+    correct: "Carnallite",
+  },
+  {
+    id: "14",
+    question: "The chief ore of aluminium is :",
+    options: ["Feldspar","Bauxite","Mica","Kaolin"],
+    correct: "Bauxite",
+  },
+  {
+    id: "15",
+    question: "Baeyer’s process is used for the purification of :",
+    options: ["Boron", "Aluminium", "Titanium", "None of these"],
+    correct: "Aluminium",
+  },
+  {
+    id: "16",
+    question: "Alumina is :",
+    options: ["acidic", "basic", "neutral", "amphoteric"],
+    correct: "amphoteric",
+  },
+  {
+    id: "17",
+    question: "Pin iron is also called :",
+    options: ["Wrought iron", "Cast iron", "Steel", "Stainless steel"],
+    correct: "Cast iron",
+  },
+  {
+    id: "18",
+    question: "Blast furnace is used in the metallurgy of :",
+    options: ["Aluminium", "Gold", "Iron", "Silver"],
+    correct: "Iron",
+  },
+  {
+    id: "19",
+    question: "Haematie is :",
+    options: ["Fe3 O4", "Fe3 O3", "Fe2 O3 Cao", "None of these"],
+    correct: "Fe3 O3",
+  },
+  {
+    id: "20",
+    question: "One of the following is not the ore of copper :",
+    options: ["Copper glance", "Azurite", "Malachite", "Corrundum"],
+    correct: "Corrundum",
+  },
+  {
+    id: "21",
+    question: "Froth floatation process is used in the metallurgy of :",
+    options: ["chloride ores", "sulphide ores", "oxide ores", "amalgam"],
+    correct: "sulphide ores",
+  },
+  {
+    id: "22",
+    question: "Which of the following elements is present in haemoglobin ?",
+    options: ["Mg", "Fe", "Cu", "Zn"],
+    correct: "Fe",
+  },
+  {
+    id: "23",
+    question: "Metal present in insulin is :",
+    options: ["Copper", "Iron", "Zinc", "Magnesium"],
+    correct: "Zinc",
+  },
+  {
+    id: "24",
+    question: "In electrorefining of copper, some gold is deposited as :",
+    options: ["Anode mud", "Cathode mud", "Cathode", "Electrolyte"],
+    correct: "Anode mud",
+  },
+  {
+    id: "25",
+    question: "Calcium is extracted by the electrolysis of :",
+    options: ["CaCl2 solution", "CaSO4 solution", "fused CaCl2", "fused Ca3(PO4)2"],
+    correct: "fused Ca3(PO4)2",
+  },
+  {
+    id: "26",
+    question: "The most electropositive alkali metal is :",
+    options: ["Li", "Na", "K", "Cs"],
+    correct: "Cs",
+  },
+  {
+    id: "27",
+    question: "In blast furnace, the highest temperature is in :",
+    options: ["reduction zone", "slag formation zone", "fusion zone", "combustion zone"],
+    correct: "combustion zone",
+  },
+  {
+    id: "27",
+    question: "Which is the more pure iron ?",
+    options: ["cast iron", "pig iron", "steel",  "wroughtiron"],
+    correct: "wrought iron",
+  },
+  {
+    id: "28",
+    question: "Which is extensively used for making aeroplane body ?",
+    options: ["Zn", "Cu", "Fe", "Al"],
+    correct: "Al",
+  },
+  {
+    id: "29",
+    question: "Which alloy does not contain copper ?",
+    options: ["misch metal", "bell metal", "german silve", "delta metal"],
+    correct: "misch metal",
+  },
+  {
+    id: "30",
+    question: "Percentage of silver in german silver is :",
+    options: ["55", "0", "0.5", "24"],
+    correct: "0",
+  },
+  {
+    id: "31",
+    question: "Which is not mineral ?",
+    options: ["sulphur", "haematite", "petroleum", "zincite"],
+    correct: "petroleum",
+  },
+  {
+    id: "32",
+    question: "Electrolysis of molten NaCl produces Na and Cl, because :",
+    options: ["Na is oxidised B", "Cl is oxidised", "Both are oxidised", "none of these are oxidised or reduced"],
+    correct: "Cl is Oxidised",
+  },
+  {
+    id: "33",
+    question: "In thermite process which is used as reducing agent ?",
+    options: ["carbon", "iron", "aluminium", "zinc"],
+    correct: "aluminium",
+  },
+  {
+    id: "34",
+    question: "In cathodic protection of iron which is acting as anode?",
+    options: ["iron", "magnesium", "platinum", "H2O"],
+    correct: "magnesium",
+  },
+  {
+    id: "35",
+    question: "The green patches form on the surface of copper is :",
+    options: ["CuSO4", "CU(OH)2", "CuO", "CuSO4 . 3 Cu(OH)2"],
+    correct: "CuSO4 . 3 Cu(OH)2",
+  },
+  {
+    id: "36",
+    question: "Which alloy among the following Is used In electrical fittings?",
+    options: ["German silver", "Brass", "Alnico", "Brass"],
+    correct: "Brass",
+  },
+  {
+    id: "37",
+    question: "What should be used to remove the green patties formed on the copper surface?",
+    options: ["detergent water", "lemon juice", "sand paper", "washing soda"],
+    correct: "lemon juice",
+  },
+  {
+    id: "38",
+    question: "Aluminium is responsible for",
+    options: ["Wilson’s disease", "Hepatitis-B", "Alzheimer’s disease", "Parkinson’s disease"],
+    correct: "Alzheimer’s disease",
+  },
+  {
+    id: "39",
+    question: "The metal which can be extracted by simply heating the cinnabar ore mains: ",
+    options: ["mercury", "zinc", "copper", "iron"],
+    correct: "mercury",
+  },
+  {
+    id: "40",
+    question: "What are the constituents of alloy solder?",
+    options: ["Lead, Zinc", "Copper, tin", "Lead, tin", "Copper, Zinc"],
+    correct: "Lead, tin",
+  },
+  {
+    id: "41",
+    question: "Which metal is extracted by the electrolytic reduction of their molten chlorides or oxides?",
+    options: ["sodium", "iron", "zinc", "copper"],
+    correct: "sodium",
+  },
+  {
+    id: "42",
+    question: "Two metals which can be extracted by heating their sulphides in air,",
+    options: ["Na & Cu", "Cu & Ai", "K & Zn", "Hg & Cu"],
+    correct: "Hg & Cu",
+  },
+  {
+    id: "43",
+    question: "Which ore is used as a reducing agent in thermite process?",
+    options: ["Chromium", "manganese", "aluminium", "iron"],
+    correct: "aluminium",
+  },
+  {
+    id: "44",
+    question: "Food cans are coated with tin and not with zinc because",
+    options: ["Zinc has higher melting point than tin", "Zinc is costlier than tin", "Zinc is more reactive than tin", "Zinc is less reactive than tin"],
+    correct: "Zinc is more reactive than tin",
+  },
+  {
+    id: "45",
+    question: "Which of the following methods is suitable for preventing an iron frying pan from rusting?",
+    options: ["Applying grease", "Applying paint", "Applying a coating of zinc", "All of the above"],
+    correct: "All of the above",
+  },
+  {
+    id: "46",
+    question: "Activity of the metals (in the reactivity series) decreases in the order:",
+    options: ["K > Al > Zn > Au", "K > AI > Au > Zn", "Au < K < Zn < AI", "K > Zn > Au >Al"],
+    correct: "K > Al > Zn > Au",
+  },
+  {
+    id:"47",
+    question:"Calcium is extracted by the electrolysis of :",
+    options:["CaCl2 solution","CaSO4 solution" ,"fused Ca3(PO4)2","fused CaCl2"],
+    correct:"fused CaCl2"
+  },
+  
+  
+];
+//Restart Quiz
+restart.addEventListener("click", () => {
+  initial();
+  displayContainer.classList.remove("hide");
+  scoreContainer.classList.add("hide");
+});
+//Next Button
+nextBtn.addEventListener(
+  "click",
+  (displayNext = () => {
+    //increment questionCount
+    questionCount += 1;
+    //if last question
+    if (questionCount == quizArray.length) {
+      //hide question container and display score
+      displayContainer.classList.add("hide");
+      scoreContainer.classList.remove("hide");
+      //user score
+      userScore.innerHTML =
+        "Your score is " + scoreCount + " out of " + questionCount;
+    } else {
+      //display questionCount
+      countOfQuestion.innerHTML =
+        questionCount + 1 + " of " + quizArray.length + " Question";
+      //display quiz
+      quizDisplay(questionCount);
+      count = 26;
+      clearInterval(countdown);
+      timerDisplay();
+    }
+  })
+);
+//Timer
+const timerDisplay = () => {
+  countdown = setInterval(() => {
+    count--;
+    // timeLeft.innerHTML = ${count}s;
+    if (count == 0) {
+      clearInterval(countdown);
+      displayNext();
+    }
+  }, 1000);
+};
+//Display quiz
+const quizDisplay = (questionCount) => {
+  let quizCards = document.querySelectorAll(".container-mid");
+  //Hide other cards
+  quizCards.forEach((card) => {
+    card.classList.add("hide");
+  });
+  //display current question card
+  quizCards[questionCount].classList.remove("hide");
+};
+//Quiz Creation
+function quizCreator() {
+  //randomly sort questions
+  quizArray.sort(() => Math.random() - 0.5);
+  //generate quiz
+  for (let i of quizArray) {
+    //randomly sort options
+    i.options.sort(() => Math.random() - 0.5);
+    //quiz card creation
+    let div = document.createElement("div");
+    div.classList.add("container-mid", "hide");
+    //question number
+    countOfQuestion.innerHTML = 1 + " of " + quizArray.length + " Question";
+    //question
+    let question_DIV = document.createElement("p");
+    question_DIV.classList.add("question");
+    question_DIV.innerHTML = i.question;
+    div.appendChild(question_DIV);
+    //options
+    div.innerHTML += `
+    <button class="option-div" onclick="checker(this)">${i.options[0]}</button>
+     <button class="option-div" onclick="checker(this)">${i.options[1]}</button>
+      <button class="option-div" onclick="checker(this)">${i.options[2]}</button>
+       <button class="option-div" onclick="checker(this)">${i.options[3]}</button>
+    `;
+    quizContainer.appendChild(div);
+  }
+}
+//Checker Function to check if option is correct or not
+function checker(userOption) {
+  let userSolution = userOption.innerText;
+  let question =
+    document.getElementsByClassName("container-mid")[questionCount];
+  let options = question.querySelectorAll(".option-div");
+  //if user clicked answer == correct option stored in object
+  if (userSolution === quizArray[questionCount].correct) {
+    userOption.classList.add("correct");
+    scoreCount++;
+    document.getElementById('correctSound').play();
+  } else {
+    userOption.classList.add("incorrect");
+    document.getElementById('wrongSound').play();
+    //For marking the correct option
+    options.forEach((element) => {
+      if (element.innerText == quizArray[questionCount].correct) {
+        element.classList.add("correct");
+      }
+    });
+  }
+  //clear interval(stop timer)
+  clearInterval(countdown);
+  //disable all options
+  options.forEach((element) => {
+    element.disabled = true;
+  });
+}
+//initial setup
+function initial() {
+  quizContainer.innerHTML = "";
+  questionCount = 0;
+  scoreCount = 0;
+  count = 26;
+  clearInterval(countdown);
+  timerDisplay();
+  quizCreator();
+  quizDisplay(questionCount);
+}
+//when user click on start button
+startButton.addEventListener("click", () => {
+  startScreen.classList.add("hide");
+  displayContainer.classList.remove("hide");
+  initial();
+});
+//hide quiz and display start screen
+window.onload = () => {
+    let message=new SpeechSynthesisUtterance('Best Of Luch Give Your Best In Exam');
+            window.speechSynthesis.speak(message);
+  startScreen.classList.remove("hide");
+  displayContainer.classList.add("hide");
+};
+    </script>
+  </body>
+</html>
